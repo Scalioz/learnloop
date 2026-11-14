@@ -8,6 +8,7 @@
 //   RATE_LIMIT       (Text)    optional, AI requests per person per 10 minutes, default 40
 
 const DEFAULT_MODEL = "gemini-flash-latest";
+const FALLBACK_MODELS = ["gemini-2.5-flash", "gemini-flash-lite-latest", "gemini-2.5-flash-lite"];
 const hits = new Map();
 
 export default {
@@ -71,21 +72,26 @@ export default {
     const generationConfig = { maxOutputTokens: 16384 };
     if (body.json) generationConfig.responseMimeType = "application/json";
 
-    const model = env.MODEL || DEFAULT_MODEL;
-    let r, data;
-    try {
-      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
-        body: JSON.stringify({ contents, generationConfig })
-      });
-      data = await r.json().catch(() => ({}));
-    } catch (e) {
-      return reply({ error: "upstream" }, 502);
+    // try the main model first, then backups if Google says it is busy or unavailable
+    const models = [...new Set([env.MODEL || DEFAULT_MODEL, ...FALLBACK_MODELS])];
+    let r, data, lastStatus = 502, lastDetail = "";
+    for (const model of models) {
+      try {
+        r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+          body: JSON.stringify({ contents, generationConfig })
+        });
+        data = await r.json().catch(() => ({}));
+      } catch (e) { r = null; lastDetail = "network"; continue; }
+      if (r.ok) break;
+      lastStatus = r.status;
+      lastDetail = data && data.error && data.error.message ? String(data.error.message).slice(0, 300) : "HTTP " + r.status;
+      if (r.status === 400 || r.status === 403) break; // bad request or bad key: other models won't help
+      r = null;
     }
-    if (!r.ok) {
-      const detail = data && data.error && data.error.message ? String(data.error.message).slice(0, 300) : "";
-      return reply({ error: r.status === 429 ? "rate_limited" : "upstream", detail }, r.status === 429 ? 429 : 502);
+    if (!r || !r.ok) {
+      return reply({ error: lastStatus === 429 ? "rate_limited" : "upstream", detail: lastDetail }, lastStatus === 429 ? 429 : 502);
     }
     const cand = (data.candidates || [])[0] || {};
     const text = ((cand.content && cand.content.parts) || []).filter(p => !p.thought).map(p => p.text || "").join("");
