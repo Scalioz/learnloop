@@ -27,19 +27,19 @@ It was made as a Class 9 science project.
 - `index.html` – the whole app (runs in the browser, hosted on GitHub Pages)
 - `config.js` – the address of the AI server
 - `library.json` – the ready-made study sets shown in Explore
-- `worker/worker.js` – a small Cloudflare Worker that keeps the AI key secret and talks to Google Gemini
+- `worker/worker.js` – a small Cloudflare Worker that keeps the AI key secret and talks to Anthropic's Claude API (Claude Sonnet 5.5, with Claude Haiku 5.5 as backup)
 
 Study sets and progress are saved on the student's own device (browser storage).
 Voice recording and read-aloud use the browser's built-in speech features (best in Google Chrome or Microsoft Edge).
 
 ## Setup (one time)
 
-1. **Get a free Gemini key:** go to https://aistudio.google.com/apikey → Create API key → copy it.
+1. **Get a Claude API key:** console.anthropic.com → Billing → add credit → API keys → Create key → copy it.
 2. **Create the AI server:** Cloudflare dashboard → Workers & Pages → Create → Create Worker → name it `learnloop-ai` → Deploy → Edit code → replace everything with `worker/worker.js` → Deploy.
 3. **Add settings:** Worker → Settings → Variables and Secrets → Add:
-   - `GEMINI_API_KEY` (type Secret) = your Gemini key
+   - `ANTHROPIC_API_KEY` (type Secret) = your Claude API key
    - `ALLOWED_ORIGINS` (type Text) = `https://scalioz.github.io`
-4. **Connect the app:** put the Worker address (for example `https://learnloop-ai.yourname.workers.dev`) into `config.js`.
+4. **Connect the app:** put the Worker address into `config.js`.
 5. **Turn on GitHub Pages:** repo Settings → Pages → Branch `main`, folder `/ (root)` → Save.
 
 To check the AI server, open the Worker address in a browser. It should show `"keySet": true`.
