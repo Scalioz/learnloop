@@ -1,0 +1,122 @@
+{
+  "sets": [
+    {
+      "id": "starter-matter",
+      "title": "Matter in Our Surroundings",
+      "subject": "Science",
+      "sourceType": "topic",
+      "topic": "Matter in Our Surroundings (NCERT Class 9 Science, Chapter 1)",
+      "sourceText": "",
+      "sharedAt": 1794649700000,
+      "summary": "Everything around us is made of matter. Matter has mass and takes up space. It is made of tiny particles that have spaces between them, keep moving, and attract each other. Matter exists as solid, liquid or gas, and it can change from one state to another when we change temperature or pressure. Evaporation happens below the boiling point and causes cooling.",
+      "notes": [
+        {"heading": "What is matter?", "points": ["Anything that has mass and occupies space is matter.", "Air, water, a stone and our body are all matter.", "Matter is made of very small particles."]},
+        {"heading": "Characteristics of particles", "points": ["Particles of matter are very, very small.", "There is space between particles.", "Particles are always moving, and move faster when heated.", "Particles attract each other. This force is strongest in solids."]},
+        {"heading": "States of matter", "points": ["Solids have a fixed shape and fixed volume and are hard to compress.", "Liquids have a fixed volume but take the shape of their container.", "Gases have no fixed shape or volume and are easy to compress.", "LPG and CNG are gases compressed into cylinders."]},
+        {"heading": "Changing states", "points": ["Melting point of ice is 0°C (273.15 K).", "Boiling point of water is 100°C (373 K).", "Latent heat is heat used to change state without raising temperature.", "Sublimation: a solid turns straight into gas, like camphor or naphthalene.", "Kelvin = °C + 273."]},
+        {"heading": "Evaporation", "points": ["Evaporation is a liquid turning into vapour below its boiling point.", "It happens only at the surface.", "It is faster with more surface area, higher temperature, more wind and less humidity.", "Evaporation causes cooling, which is why sweating cools our body."]}
+      ],
+      "keyTerms": [
+        {"term": "Matter", "meaning": "Anything that has mass and occupies space."},
+        {"term": "Diffusion", "meaning": "Particles of one substance mixing on their own with particles of another."},
+        {"term": "Latent heat of fusion", "meaning": "Heat needed to change 1 kg of solid into liquid at its melting point."},
+        {"term": "Latent heat of vaporisation", "meaning": "Heat needed to change 1 kg of liquid into gas at its boiling point."},
+        {"term": "Sublimation", "meaning": "A solid changing directly into gas without becoming liquid."},
+        {"term": "Humidity", "meaning": "The amount of water vapour present in the air."},
+        {"term": "Dry ice", "meaning": "Solid carbon dioxide, which turns straight into gas."}
+      ],
+      "flashcards": [
+        {"q": "What is matter?", "a": "Anything that has mass and occupies space."},
+        {"q": "Name the three states of matter.", "a": "Solid, liquid and gas."},
+        {"q": "What is the melting point of ice?", "a": "0°C, which is 273.15 K."},
+        {"q": "What is the boiling point of water?", "a": "100°C, which is 373 K."},
+        {"q": "How do you convert °C to Kelvin?", "a": "Add 273 to the temperature in °C."},
+        {"q": "What is sublimation?", "a": "A solid changing directly into gas, like camphor or naphthalene."},
+        {"q": "What is diffusion?", "a": "Particles of two substances mixing on their own."},
+        {"q": "Why does sweating keep us cool on a hot day?", "a": "Sweat evaporates and takes heat from our body, which cools us."},
+        {"q": "Which state is easiest to compress?", "a": "Gas, because its particles have large spaces between them."},
+        {"q": "What is latent heat?", "a": "Hidden heat used to change state without raising the temperature."},
+        {"q": "What is dry ice?", "a": "Solid carbon dioxide."},
+        {"q": "Name four factors that affect evaporation.", "a": "Surface area, temperature, humidity and wind speed."}
+      ],
+      "quiz": [
+        {"q": "Which of these is NOT matter?", "options": ["Air", "Smell of perfume", "Feeling of cold", "Water"], "answer": 2, "explanation": "A feeling has no mass and takes up no space, so it is not matter."},
+        {"q": "What happens to particles when a substance is heated?", "options": ["They stop moving", "They move faster", "They become bigger", "They disappear"], "answer": 1, "explanation": "Heat gives particles more kinetic energy, so they move faster."},
+        {"q": "Which substance shows sublimation?", "options": ["Salt", "Sugar", "Camphor", "Sand"], "answer": 2, "explanation": "Camphor changes directly from solid to gas."},
+        {"q": "25°C is equal to:", "options": ["248 K", "298 K", "273 K", "325 K"], "answer": 1, "explanation": "25 + 273 = 298 K."},
+        {"q": "Evaporation is faster when humidity is:", "options": ["High", "Low", "It makes no difference", "Exactly 100%"], "answer": 1, "explanation": "Dry air can take in more water vapour, so evaporation is faster."},
+        {"q": "Why do solids have a fixed shape?", "options": ["Particles are far apart", "Particles move freely", "Strong attraction holds particles in place", "They have no particles"], "answer": 2, "explanation": "Strong forces of attraction keep the particles of a solid tightly packed."}
+      ],
+      "blanks": [
+        {"sentence": "A liquid changing into vapour below its boiling point is called _____.", "answer": "evaporation", "hint": "It causes cooling."},
+        {"sentence": "Solid carbon dioxide is called _____ ice.", "answer": "dry", "hint": "Opposite of wet."},
+        {"sentence": "The SI unit of temperature is _____.", "answer": "kelvin", "hint": "Named after Lord ____."},
+        {"sentence": "The mixing of particles of two substances on their own is called _____.", "answer": "diffusion", "hint": "Smell of incense spreading in a room."}
+      ],
+      "written": [
+        {"q": "Why does a desert cooler cool better on a hot, dry day?", "marks": 2, "modelAnswer": "On a hot, dry day the temperature is high and humidity is low, so water in the cooler pads evaporates faster. Faster evaporation takes more heat from the air, so the air becomes cooler.", "keyPoints": ["High temperature and low humidity", "Faster evaporation", "Evaporation causes cooling"]},
+        {"q": "Convert 300 K and 573 K into degrees Celsius.", "marks": 2, "modelAnswer": "°C = K − 273. So 300 K = 27°C and 573 K = 300°C.", "keyPoints": ["Formula °C = K − 273", "300 K = 27°C", "573 K = 300°C"]},
+        {"q": "Give three differences between solids, liquids and gases.", "marks": 3, "modelAnswer": "Solids have a fixed shape and volume, liquids have a fixed volume but no fixed shape, and gases have neither. Solids are hardly compressible, liquids are slightly compressible and gases are highly compressible. Particles are closely packed in solids, less closely in liquids and far apart in gases.", "keyPoints": ["Shape and volume", "Compressibility", "Spacing of particles"]}
+      ]
+    },
+    {
+      "id": "starter-french-revolution",
+      "title": "The French Revolution",
+      "subject": "Social Science",
+      "sourceType": "topic",
+      "topic": "The French Revolution (NCERT Class 9 History, Chapter 1)",
+      "sourceText": "",
+      "sharedAt": 1794649600000,
+      "summary": "In 1789 the people of France rose against their king, Louis XVI. Society was divided into three estates, and only the third estate paid taxes. Ideas of liberty and equality from thinkers like Rousseau and Montesquieu inspired people. The Bastille was stormed on 14 July 1789, France became a republic in 1792, and the revolution spread ideas of freedom and democracy across the world.",
+      "notes": [
+        {"heading": "French society before 1789", "points": ["Louis XVI became king of France in 1774.", "Society had three estates: clergy, nobility and the third estate.", "Only the third estate (peasants, workers, merchants) paid taxes.", "Peasants paid tithes to the Church and taille to the state."]},
+        {"heading": "Causes of the revolution", "points": ["Long wars had left the treasury empty, so taxes were raised.", "A subsistence crisis made bread too costly for poor people.", "A growing middle class wanted privileges based on merit, not birth.", "Thinkers like John Locke, Rousseau and Montesquieu spread new ideas."]},
+        {"heading": "The outbreak", "points": ["The Estates General met on 5 May 1789.", "The third estate took the Tennis Court Oath on 20 June 1789.", "The Bastille fortress-prison was stormed on 14 July 1789.", "The Declaration of the Rights of Man and Citizen promised equal rights."]},
+        {"heading": "France becomes a republic", "points": ["The Constitution of 1791 made France a constitutional monarchy.", "France was declared a republic in September 1792.", "Louis XVI was executed in January 1793.", "Robespierre's rule of 1793-94 is called the Reign of Terror."]},
+        {"heading": "Impact", "points": ["Slavery in French colonies was abolished in 1794.", "Napoleon crowned himself emperor in 1804.", "Ideas of liberty, equality and fraternity spread across the world.", "Women in France finally got the right to vote in 1946."]}
+      ],
+      "keyTerms": [
+        {"term": "Estates General", "meaning": "A political body where the three estates sent representatives."},
+        {"term": "Tithe", "meaning": "A tax paid to the Church, about one-tenth of the crop."},
+        {"term": "Taille", "meaning": "A direct tax paid to the state."},
+        {"term": "Subsistence crisis", "meaning": "When basic means of living, like food, become scarce."},
+        {"term": "Jacobins", "meaning": "A political club led by Maximilien Robespierre."},
+        {"term": "Sans-culottes", "meaning": "Poor Jacobin supporters, meaning 'those without knee breeches'."},
+        {"term": "Guillotine", "meaning": "A device used to behead people, named after Dr Guillotin."}
+      ],
+      "flashcards": [
+        {"q": "When was the Bastille stormed?", "a": "14 July 1789."},
+        {"q": "Who was the king of France during the revolution?", "a": "Louis XVI."},
+        {"q": "Name the three estates of French society.", "a": "Clergy, nobility and the third estate."},
+        {"q": "Which estate paid taxes?", "a": "Only the third estate."},
+        {"q": "What was the Tennis Court Oath?", "a": "The third estate's promise on 20 June 1789 not to leave until France had a constitution."},
+        {"q": "Who wrote The Social Contract?", "a": "Jean-Jacques Rousseau."},
+        {"q": "Who proposed division of power in The Spirit of the Laws?", "a": "Montesquieu."},
+        {"q": "When was France declared a republic?", "a": "September 1792."},
+        {"q": "Who led the Reign of Terror?", "a": "Maximilien Robespierre."},
+        {"q": "When was slavery abolished in French colonies?", "a": "1794."},
+        {"q": "When did Napoleon crown himself emperor?", "a": "1804."},
+        {"q": "When did women in France get the right to vote?", "a": "1946."}
+      ],
+      "quiz": [
+        {"q": "The Bastille was hated because it was:", "options": ["A royal palace", "A symbol of the king's despotic power", "A church", "A tax office"], "answer": 1, "explanation": "The Bastille prison stood for the king's unchecked power."},
+        {"q": "Which tax was paid to the Church?", "options": ["Taille", "Tithe", "Gabelle", "Customs"], "answer": 1, "explanation": "Tithes were paid to the Church by peasants."},
+        {"q": "Who wrote Two Treatises of Government?", "options": ["Rousseau", "Montesquieu", "John Locke", "Voltaire"], "answer": 2, "explanation": "John Locke argued against the divine right of kings."},
+        {"q": "The Constitution of 1791 made France a:", "options": ["Republic", "Constitutional monarchy", "Empire", "Dictatorship"], "answer": 1, "explanation": "The king stayed, but his powers were limited by the constitution."},
+        {"q": "The Reign of Terror took place in:", "options": ["1789-90", "1793-94", "1799-1804", "1815"], "answer": 1, "explanation": "Robespierre's harsh rule lasted from 1793 to 1794."},
+        {"q": "Which group did NOT pay taxes before 1789?", "options": ["Peasants", "Merchants", "Clergy", "Artisans"], "answer": 2, "explanation": "The clergy and nobility were exempt from taxes."}
+      ],
+      "blanks": [
+        {"sentence": "The Bastille was stormed on 14 July _____.", "answer": "1789", "hint": "The year the revolution began."},
+        {"sentence": "Robespierre led the political club called the _____.", "answer": "Jacobins", "hint": "Named after a convent in Paris."},
+        {"sentence": "The French national anthem is called the _____.", "answer": "Marseillaise", "hint": "Named after the city of Marseilles."},
+        {"sentence": "Napoleon crowned himself emperor in _____.", "answer": "1804", "hint": "Early 19th century."}
+      ],
+      "written": [
+        {"q": "What was the subsistence crisis?", "marks": 2, "modelAnswer": "A subsistence crisis is when basic food becomes scarce. In France the population grew quickly but grain production did not, so the price of bread rose. Wages did not rise, so poor people could not afford food.", "keyPoints": ["Food became scarce", "Bread prices rose", "Wages did not keep up"]},
+        {"q": "Describe the Tennis Court Oath.", "marks": 3, "modelAnswer": "At the Estates General in 1789 the third estate wanted one vote per member. When this was refused, its members walked out. On 20 June 1789 they gathered in an indoor tennis court at Versailles, declared themselves the National Assembly and swore not to leave until they had written a constitution limiting the king's powers.", "keyPoints": ["Third estate walked out of the Estates General", "20 June 1789, tennis court at Versailles", "Declared National Assembly and swore to make a constitution"]},
+        {"q": "How did the ideas of philosophers help start the French Revolution?", "marks": 5, "modelAnswer": "Philosophers spread the idea of a society based on freedom, equal laws and opportunity for all. John Locke rejected the divine right of kings. Rousseau proposed a government based on a social contract between people and their representatives. Montesquieu proposed dividing power between the legislature, executive and judiciary. These ideas were discussed in salons and coffee houses and spread through books and newspapers, so people began to question the absolute power of the king and the privileges of the clergy and nobility.", "keyPoints": ["Locke: against divine right", "Rousseau: social contract", "Montesquieu: division of power", "Ideas spread through books, salons and coffee houses", "People questioned privileges and absolute monarchy"]}
+      ]
+    }
+  ]
+}
