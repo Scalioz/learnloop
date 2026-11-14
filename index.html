@@ -101,6 +101,8 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand);b
 .tab.on{background:var(--ink);color:var(--surface)}
 .tab svg{width:17px;height:17px}
 .drop{border:2px dashed var(--line);border-radius:var(--r);padding:26px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;cursor:pointer;background:var(--surface-2)}
+.drop svg{width:40px;height:40px;color:var(--brand)}
+.empty > svg{width:44px;height:44px;color:var(--brand)}
 .drop.over{border-color:var(--brand);background:var(--brand-soft)}
 .thumbs{display:flex;gap:8px;flex-wrap:wrap}
 .thumbs img{width:86px;height:86px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
@@ -348,7 +350,8 @@ function errMsg(e) {
   if (c === "too_large") return "That file is too big. Try fewer pages or smaller photos.";
   if (c === "rate_limited") return "Too many requests right now. Wait a minute and try again.";
   if (c === "bad_json") return "The AI reply came back in the wrong shape. Please try again.";
-  return "Something went wrong. Please try again.";
+  if (e && e.message && !c) return "Something went wrong: " + e.message;
+  return "Something went wrong (" + (c || "unknown") + (e && e.detail ? ": " + e.detail : "") + "). Please try again.";
 }
 function parseLoose(text) {
   const t = String(text || "").replace(/```json|```/g, "");
@@ -1260,7 +1263,7 @@ async function callAI(input, opts = {}, wantJson = false) {
     res = await fetch(API + "/ai", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages, images, json: wantJson }), signal: opts.signal });
   } catch (e) { throw { code: "network" }; }
   let body = {}; try { body = await res.json(); } catch (e) {}
-  if (!res.ok) throw { code: res.status === 429 ? "rate_limited" : (body.error || "server") };
+  if (!res.ok) throw { code: res.status === 429 ? "rate_limited" : (body.error || "server"), detail: body.detail || ("HTTP " + res.status) };
   const text = String(body.text || "");
   if (opts.onText) { try { opts.onText({ text, delta: text }); } catch (e) {} }
   return { text, truncated: !!body.truncated };
