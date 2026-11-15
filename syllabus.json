@@ -1,0 +1,684 @@
+{
+ "note": "Chapter and topic names follow the current CBSE (NCERT), ICSE (CISCE) and Cambridge IGCSE syllabuses. Schools can differ slightly.",
+ "boards": [
+  {
+   "id": "cbse",
+   "name": "CBSE",
+   "full": "CBSE (NCERT)",
+   "style": "cbse",
+   "levels": [
+    {
+     "id": "9",
+     "name": "Class 9",
+     "subjects": [
+      {
+       "name": "Science",
+       "code": "",
+       "chapters": [
+        "Matter in Our Surroundings",
+        "Is Matter Around Us Pure?",
+        "Atoms and Molecules",
+        "Structure of the Atom",
+        "The Fundamental Unit of Life",
+        "Tissues",
+        "Motion",
+        "Force and Laws of Motion",
+        "Gravitation",
+        "Work and Energy",
+        "Sound",
+        "Improvement in Food Resources"
+       ]
+      },
+      {
+       "name": "Maths",
+       "code": "",
+       "chapters": [
+        "Number Systems",
+        "Polynomials",
+        "Coordinate Geometry",
+        "Linear Equations in Two Variables",
+        "Introduction to Euclid's Geometry",
+        "Lines and Angles",
+        "Triangles",
+        "Quadrilaterals",
+        "Circles",
+        "Heron's Formula",
+        "Surface Areas and Volumes",
+        "Statistics"
+       ]
+      },
+      {
+       "name": "History",
+       "code": "",
+       "chapters": [
+        "The French Revolution",
+        "Socialism in Europe and the Russian Revolution",
+        "Nazism and the Rise of Hitler",
+        "Forest Society and Colonialism",
+        "Pastoralists in the Modern World"
+       ]
+      },
+      {
+       "name": "Geography",
+       "code": "",
+       "chapters": [
+        "India – Size and Location",
+        "Physical Features of India",
+        "Drainage",
+        "Climate",
+        "Natural Vegetation and Wildlife",
+        "Population"
+       ]
+      },
+      {
+       "name": "Civics",
+       "code": "",
+       "chapters": [
+        "What is Democracy? Why Democracy?",
+        "Constitutional Design",
+        "Electoral Politics",
+        "Working of Institutions",
+        "Democratic Rights"
+       ]
+      },
+      {
+       "name": "Economics",
+       "code": "",
+       "chapters": [
+        "The Story of Village Palampur",
+        "People as Resource",
+        "Poverty as a Challenge",
+        "Food Security in India"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "10",
+     "name": "Class 10",
+     "subjects": [
+      {
+       "name": "Science",
+       "code": "",
+       "chapters": [
+        "Chemical Reactions and Equations",
+        "Acids, Bases and Salts",
+        "Metals and Non-metals",
+        "Carbon and its Compounds",
+        "Life Processes",
+        "Control and Coordination",
+        "How do Organisms Reproduce?",
+        "Heredity",
+        "Light – Reflection and Refraction",
+        "The Human Eye and the Colourful World",
+        "Electricity",
+        "Magnetic Effects of Electric Current",
+        "Our Environment"
+       ]
+      },
+      {
+       "name": "Maths",
+       "code": "",
+       "chapters": [
+        "Real Numbers",
+        "Polynomials",
+        "Pair of Linear Equations in Two Variables",
+        "Quadratic Equations",
+        "Arithmetic Progressions",
+        "Triangles",
+        "Coordinate Geometry",
+        "Introduction to Trigonometry",
+        "Some Applications of Trigonometry",
+        "Circles",
+        "Areas Related to Circles",
+        "Surface Areas and Volumes",
+        "Statistics",
+        "Probability"
+       ]
+      },
+      {
+       "name": "History",
+       "code": "",
+       "chapters": [
+        "The Rise of Nationalism in Europe",
+        "Nationalism in India",
+        "The Making of a Global World",
+        "The Age of Industrialisation",
+        "Print Culture and the Modern World"
+       ]
+      },
+      {
+       "name": "Geography",
+       "code": "",
+       "chapters": [
+        "Resources and Development",
+        "Forest and Wildlife Resources",
+        "Water Resources",
+        "Agriculture",
+        "Minerals and Energy Resources",
+        "Manufacturing Industries",
+        "Lifelines of National Economy"
+       ]
+      },
+      {
+       "name": "Civics",
+       "code": "",
+       "chapters": [
+        "Power Sharing",
+        "Federalism",
+        "Gender, Religion and Caste",
+        "Political Parties",
+        "Outcomes of Democracy"
+       ]
+      },
+      {
+       "name": "Economics",
+       "code": "",
+       "chapters": [
+        "Development",
+        "Sectors of the Indian Economy",
+        "Money and Credit",
+        "Globalisation and the Indian Economy",
+        "Consumer Rights"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "icse",
+   "name": "ICSE",
+   "full": "ICSE (CISCE)",
+   "style": "icse",
+   "levels": [
+    {
+     "id": "9",
+     "name": "Class 9",
+     "subjects": [
+      {
+       "name": "Physics",
+       "code": "",
+       "chapters": [
+        "Measurements and Experimentation",
+        "Motion in One Dimension",
+        "Laws of Motion",
+        "Fluids: Pressure",
+        "Upthrust in Fluids, Archimedes' Principle and Floatation",
+        "Heat and Energy",
+        "Reflection of Light",
+        "Propagation of Sound Waves",
+        "Current Electricity",
+        "Magnetism"
+       ]
+      },
+      {
+       "name": "Chemistry",
+       "code": "",
+       "chapters": [
+        "The Language of Chemistry",
+        "Chemical Changes and Reactions",
+        "Water",
+        "Atomic Structure and Chemical Bonding",
+        "The Periodic Table",
+        "Study of the First Element – Hydrogen",
+        "Study of Gas Laws",
+        "Atmospheric Pollution"
+       ]
+      },
+      {
+       "name": "Biology",
+       "code": "",
+       "chapters": [
+        "Introducing Biology",
+        "Cell: The Unit of Life",
+        "Tissues: Plant and Animal Tissues",
+        "The Flower",
+        "Pollination and Fertilization",
+        "Seeds: Structure and Germination",
+        "Respiration in Plants",
+        "Five Kingdom Classification",
+        "Economic Importance of Bacteria and Fungi",
+        "Nutrition",
+        "Digestive System",
+        "Skeleton: Movement and Locomotion",
+        "Skin: The Jack of All Trades",
+        "The Respiratory System",
+        "Hygiene: A Key to Healthy Life",
+        "Diseases: Cause and Control",
+        "Aids to Health",
+        "Health Organisations",
+        "Waste Generation and Management"
+       ]
+      },
+      {
+       "name": "Maths",
+       "code": "",
+       "chapters": [
+        "Rational and Irrational Numbers",
+        "Compound Interest",
+        "Expansions",
+        "Factorisation",
+        "Simultaneous Linear Equations",
+        "Indices (Exponents)",
+        "Logarithms",
+        "Triangles and Congruency",
+        "Isosceles Triangles",
+        "Inequalities",
+        "Mid-point and Intercept Theorems",
+        "Pythagoras Theorem",
+        "Rectilinear Figures",
+        "Theorems on Area",
+        "Circles",
+        "Statistics",
+        "Mean and Median",
+        "Area and Perimeter of Plane Figures",
+        "Solids (Surface Area and Volume)",
+        "Trigonometrical Ratios",
+        "Trigonometrical Ratios of Standard Angles",
+        "Co-ordinate Geometry",
+        "Changing the Subject of a Formula"
+       ]
+      },
+      {
+       "name": "History & Civics",
+       "code": "",
+       "chapters": [
+        "Civics: Our Constitution",
+        "Civics: Salient Features of the Constitution",
+        "Civics: Elections",
+        "Civics: Local Self-Government (Rural)",
+        "Civics: Local Self-Government (Urban)",
+        "The Harappan Civilisation",
+        "The Vedic Period",
+        "Jainism and Buddhism",
+        "The Mauryan Empire",
+        "The Sangam Age",
+        "The Age of the Guptas",
+        "Medieval India: The Cholas",
+        "Medieval India: The Delhi Sultanate",
+        "Medieval India: The Mughal Empire",
+        "The Composite Culture",
+        "The Renaissance",
+        "The Reformation",
+        "The Industrial Revolution"
+       ]
+      },
+      {
+       "name": "Geography",
+       "code": "",
+       "chapters": [
+        "Earth as a Planet",
+        "Geographic Grid: Latitudes and Longitudes",
+        "Rotation and Revolution",
+        "Structure of the Earth",
+        "Landforms of the Earth",
+        "Rocks",
+        "Volcanoes",
+        "Earthquakes",
+        "Weathering",
+        "Denudation",
+        "Hydrosphere: Ocean Currents and Tides",
+        "Composition and Structure of the Atmosphere",
+        "Insolation",
+        "Atmospheric Pressure and Winds",
+        "Humidity, Condensation and Precipitation",
+        "Pollution: Sources and Effects",
+        "Natural Regions of the World"
+       ]
+      },
+      {
+       "name": "Computer Applications",
+       "code": "",
+       "chapters": [
+        "Introduction to Object Oriented Programming",
+        "Elementary Concept of Objects and Classes",
+        "Values and Data Types",
+        "Operators in Java",
+        "Input in Java",
+        "Mathematical Library Methods",
+        "Conditional Constructs in Java",
+        "Iterative Constructs in Java",
+        "Nested for Loops",
+        "Computing and Ethics"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "10",
+     "name": "Class 10",
+     "subjects": [
+      {
+       "name": "Physics",
+       "code": "",
+       "chapters": [
+        "Force",
+        "Work, Energy and Power",
+        "Machines",
+        "Refraction of Light at Plane Surfaces",
+        "Refraction through a Lens",
+        "Spectrum",
+        "Sound",
+        "Current Electricity",
+        "Household Circuits",
+        "Electro-Magnetism",
+        "Calorimetry",
+        "Radioactivity"
+       ]
+      },
+      {
+       "name": "Chemistry",
+       "code": "",
+       "chapters": [
+        "Periodic Table, Periodic Properties and Variations",
+        "Chemical Bonding",
+        "Acids, Bases and Salts",
+        "Analytical Chemistry",
+        "Mole Concept and Stoichiometry",
+        "Electrolysis",
+        "Metallurgy",
+        "Study of Compounds: Hydrogen Chloride",
+        "Study of Compounds: Ammonia",
+        "Study of Compounds: Nitric Acid",
+        "Study of Compounds: Sulphuric Acid",
+        "Organic Chemistry"
+       ]
+      },
+      {
+       "name": "Biology",
+       "code": "",
+       "chapters": [
+        "Cell Cycle, Cell Division and Structure of Chromosomes",
+        "Genetics: Some Basic Fundamentals",
+        "Absorption by Roots",
+        "Transpiration",
+        "Photosynthesis",
+        "Chemical Coordination in Plants",
+        "The Circulatory System",
+        "The Excretory System",
+        "The Nervous System",
+        "Sense Organs",
+        "The Endocrine System",
+        "The Reproductive System",
+        "Human Population",
+        "Pollution"
+       ]
+      },
+      {
+       "name": "Maths",
+       "code": "",
+       "chapters": [
+        "Goods and Services Tax (GST)",
+        "Banking (Recurring Deposit Accounts)",
+        "Shares and Dividends",
+        "Linear Inequations",
+        "Quadratic Equations",
+        "Problems on Quadratic Equations",
+        "Ratio and Proportion",
+        "Remainder and Factor Theorems",
+        "Matrices",
+        "Arithmetic Progression",
+        "Geometric Progression",
+        "Reflection",
+        "Section and Mid-point Formula",
+        "Equation of a Line",
+        "Similarity",
+        "Loci",
+        "Circles",
+        "Tangents and Intersecting Chords",
+        "Constructions",
+        "Cylinder, Cone and Sphere",
+        "Trigonometrical Identities",
+        "Heights and Distances",
+        "Graphical Representation of Data",
+        "Measures of Central Tendency",
+        "Probability"
+       ]
+      },
+      {
+       "name": "History & Civics",
+       "code": "",
+       "chapters": [
+        "Civics: The Union Parliament",
+        "Civics: The Union Executive – The President and Vice-President",
+        "Civics: The Prime Minister and Council of Ministers",
+        "Civics: The Supreme Court",
+        "Civics: The High Courts and Subordinate Courts",
+        "The First War of Independence, 1857",
+        "Growth of Nationalism",
+        "First Phase of the Indian National Movement",
+        "Second Phase of the Indian National Movement",
+        "The Muslim League",
+        "Mahatma Gandhi and the National Movement",
+        "Forward Bloc and the INA",
+        "Independence and Partition of India",
+        "The First World War",
+        "Rise of Dictatorships",
+        "The Second World War",
+        "The United Nations",
+        "Major Agencies of the United Nations",
+        "The Non-Aligned Movement"
+       ]
+      },
+      {
+       "name": "Geography",
+       "code": "",
+       "chapters": [
+        "Interpretation of Topographical Maps",
+        "Map of India",
+        "Climate of India",
+        "Soil Resources",
+        "Natural Vegetation",
+        "Water Resources",
+        "Mineral Resources",
+        "Energy Resources (Conventional and Non-conventional)",
+        "Agriculture: Types and Features",
+        "Agriculture: Food Crops (Rice, Wheat, Millets, Pulses)",
+        "Agriculture: Cash Crops (Sugarcane, Oilseeds, Cotton, Jute, Tea, Coffee)",
+        "Manufacturing Industries",
+        "Transport",
+        "Waste Management"
+       ]
+      },
+      {
+       "name": "Computer Applications",
+       "code": "",
+       "chapters": [
+        "Revision of Class IX Syllabus",
+        "Class as the Basis of All Computation",
+        "User-defined Methods",
+        "Constructors",
+        "Library Classes and Wrapper Classes",
+        "Encapsulation",
+        "Arrays",
+        "String Handling"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "igcse",
+   "name": "IGCSE",
+   "full": "Cambridge IGCSE",
+   "style": "igcse",
+   "levels": [
+    {
+     "id": "igcse",
+     "name": "Grades 9–10",
+     "subjects": [
+      {
+       "name": "Biology",
+       "code": "0610",
+       "chapters": [
+        "Characteristics and classification of living organisms",
+        "Organisation of the organism",
+        "Movement into and out of cells",
+        "Biological molecules",
+        "Enzymes",
+        "Plant nutrition",
+        "Human nutrition",
+        "Transport in plants",
+        "Transport in animals",
+        "Diseases and immunity",
+        "Gas exchange in humans",
+        "Respiration",
+        "Excretion in humans",
+        "Coordination and response",
+        "Drugs",
+        "Reproduction",
+        "Inheritance",
+        "Variation and selection",
+        "Organisms and their environment",
+        "Human influences on ecosystems",
+        "Biotechnology and genetic modification"
+       ]
+      },
+      {
+       "name": "Chemistry",
+       "code": "0620",
+       "chapters": [
+        "States of matter",
+        "Atoms, elements and compounds",
+        "Stoichiometry",
+        "Electrochemistry",
+        "Chemical energetics",
+        "Chemical reactions",
+        "Acids, bases and salts",
+        "The Periodic Table",
+        "Metals",
+        "Chemistry of the environment",
+        "Organic chemistry",
+        "Experimental techniques and chemical analysis"
+       ]
+      },
+      {
+       "name": "Physics",
+       "code": "0625",
+       "chapters": [
+        "Physical quantities and measurement techniques",
+        "Motion",
+        "Mass and weight",
+        "Density",
+        "Forces",
+        "Momentum",
+        "Energy, work and power",
+        "Pressure",
+        "Kinetic particle model of matter",
+        "Thermal properties and temperature",
+        "Transfer of thermal energy",
+        "General properties of waves",
+        "Light",
+        "Electromagnetic spectrum",
+        "Sound",
+        "Simple phenomena of magnetism",
+        "Electrical quantities",
+        "Electric circuits",
+        "Electrical safety",
+        "Electromagnetic effects",
+        "The nuclear model of the atom",
+        "Radioactivity",
+        "Earth and the Solar System",
+        "Stars and the Universe"
+       ]
+      },
+      {
+       "name": "Mathematics",
+       "code": "0580",
+       "chapters": [
+        "Number: types of number, sets, powers and roots",
+        "Fractions, decimals, percentages and standard form",
+        "Ratio, proportion, rates and money",
+        "Bounds, estimation and exponential growth",
+        "Algebra: expressions, indices and factorising",
+        "Equations and inequalities",
+        "Sequences",
+        "Functions and graphs",
+        "Coordinate geometry",
+        "Geometry: angles, polygons and circle theorems",
+        "Similarity, congruence and constructions",
+        "Mensuration: area, surface area and volume",
+        "Trigonometry and bearings",
+        "Transformations",
+        "Vectors",
+        "Probability",
+        "Statistics"
+       ]
+      },
+      {
+       "name": "Computer Science",
+       "code": "0478",
+       "chapters": [
+        "Data representation",
+        "Data transmission",
+        "Hardware",
+        "Software",
+        "The internet and its uses",
+        "Automated and emerging technologies",
+        "Algorithm design and problem-solving",
+        "Programming",
+        "Databases",
+        "Boolean logic"
+       ]
+      },
+      {
+       "name": "Economics",
+       "code": "0455",
+       "chapters": [
+        "The basic economic problem",
+        "The allocation of resources",
+        "Microeconomic decision makers",
+        "Government and the macroeconomy",
+        "Economic development",
+        "International trade and globalisation"
+       ]
+      },
+      {
+       "name": "Geography",
+       "code": "0460",
+       "chapters": [
+        "Population dynamics",
+        "Migration",
+        "Population structure",
+        "Population density and distribution",
+        "Settlements and service provision",
+        "Urban settlements",
+        "Urbanisation",
+        "Earthquakes and volcanoes",
+        "Rivers",
+        "Coasts",
+        "Weather",
+        "Climate and natural vegetation",
+        "Development",
+        "Food production",
+        "Industry",
+        "Tourism",
+        "Energy",
+        "Water",
+        "Environmental risks of economic development"
+       ]
+      },
+      {
+       "name": "History",
+       "code": "0470",
+       "chapters": [
+        "Were the peace treaties of 1919–23 fair?",
+        "To what extent was the League of Nations a success?",
+        "Why had international peace collapsed by 1939?",
+        "Who was to blame for the Cold War?",
+        "How effectively did the USA contain the spread of Communism?",
+        "How secure was the USSR's control over Eastern Europe, 1948–c.1989?",
+        "Why did events in the Gulf matter, c.1970–2000?",
+        "Depth study: Germany, 1918–45",
+        "Depth study: Russia, 1905–41",
+        "Depth study: The USA, 1919–41"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

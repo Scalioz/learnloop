@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LearnLoop – AI Study Buddy</title>
-<meta name="description" content="LearnLoop turns any chapter, PDF, photo, video or lecture into notes, flashcards, quizzes, practice tests and a podcast. Made for Class 9 students.">
+<meta name="description" content="LearnLoop turns any chapter, PDF, photo, video or lecture into notes, flashcards, quizzes, practice tests and a podcast. Made for CBSE, ICSE and Cambridge IGCSE students.">
 <meta property="og:title" content="LearnLoop – AI Study Buddy">
 <meta property="og:description" content="Turn any lesson into notes, flashcards, quizzes and a podcast. Then keep looping back until it sticks.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 34 34%27%3E%3Crect width=%2734%27 height=%2734%27 rx=%2710%27 fill=%27%230D5C6C%27/%3E%3Cpath d=%27M10 17a7 7 0 1 1 7 7%27 fill=%27none%27 stroke=%27%23E39A0B%27 stroke-width=%273.2%27 stroke-linecap=%27round%27/%3E%3C/svg%3E">
@@ -221,7 +221,7 @@ footer a{text-decoration:none;font-weight:700}
       LearnLoop
     </a>
     <nav class="navlinks" aria-label="Page sections">
-      <a href="#features">Features</a><a href="#how">How it works</a><a href="#science">Why it works</a><a href="#explore">Explore</a><a href="#faq">FAQ</a>
+      <a href="#features">Features</a><a href="#boards">Syllabus</a><a href="#how">How it works</a><a href="#science">Why it works</a><a href="#explore">Explore</a><a href="#faq">FAQ</a>
     </nav>
     <a class="btn primary" href="app.html">Open LearnLoop</a>
   </div>
@@ -231,7 +231,7 @@ footer a{text-decoration:none;font-weight:700}
   <section class="hero">
     <div class="wrap">
       <div class="hero-copy">
-        <span class="badge">Made for Class 9 · CBSE &amp; NCERT</span>
+        <span class="badge">CBSE · ICSE · Cambridge IGCSE</span>
         <h1>Study smarter.<br>Loop until it <span class="hl">sticks.<svg viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 11c40-8 120-10 194-3" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/></svg></span></h1>
         <p class="lead">Drop in a chapter, a PDF, a photo of your textbook, a YouTube lesson or your teacher's voice. LearnLoop turns it into notes, flashcards, quizzes, a practice test and even a podcast.</p>
         <form class="try" id="tryForm" aria-label="Start a study set">
@@ -318,6 +318,21 @@ footer a{text-decoration:none;font-weight:700}
     </div>
   </section>
 
+  <section id="boards" aria-labelledby="bH">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Your board, every chapter</span>
+        <h2 id="bH">Follows your syllabus, not just any notes.</h2>
+        <p class="lead">Pick your board and class. Every chapter is listed, and notes, quizzes and tests follow your exam's style and terms.</p>
+      </div>
+      <div class="steps">
+        <a class="step" href="app.html" data-board="cbse" style="text-decoration:none"><span class="n" style="font-size:30px">CBSE</span><h3>Class 9 &amp; 10</h3><p class="muted">Every NCERT chapter in Science, Maths, History, Geography, Civics and Economics. CBSE-style 1, 2, 3 and 5 mark answers.</p><span class="muted small" style="font-weight:800;color:var(--brand)">93 chapters →</span></a>
+        <a class="step" href="app.html" data-board="icse" style="text-decoration:none"><span class="n" style="font-size:30px">ICSE</span><h3>Class 9 &amp; 10</h3><p class="muted">Physics, Chemistry, Biology, Maths, History &amp; Civics, Geography and Computer Applications. "Give reasons" and "Distinguish" style questions.</p><span class="muted small" style="font-weight:800;color:var(--brand)">209 chapters →</span></a>
+        <a class="step" href="app.html" data-board="igcse" style="text-decoration:none"><span class="n" style="font-size:30px">IGCSE</span><h3>Cambridge, Grades 9–10</h3><p class="muted">Biology 0610, Chemistry 0620, Physics 0625, Maths 0580, Computer Science 0478, Economics 0455, Geography 0460 and History 0470. Cambridge command words and Core/Extended labels.</p><span class="muted small" style="font-weight:800;color:var(--brand)">119 topics →</span></a>
+      </div>
+    </div>
+  </section>
+
   <section id="how" aria-labelledby="howH" style="background:var(--surface-2)">
     <div class="wrap">
       <div class="sec-head">
@@ -382,6 +397,7 @@ footer a{text-decoration:none;font-weight:700}
       <div>
         <details><summary>Is LearnLoop free?</summary><p>Yes. You can create study sets and use every feature without paying.</p></details>
         <details><summary>Do I need to sign up?</summary><p>No account is needed. Your study sets and progress are saved on your own phone or laptop, in the browser you use.</p></details>
+        <details><summary>Which boards does it support?</summary><p>CBSE and ICSE for Class 9 and 10, and Cambridge IGCSE. Choose your board once, and every note, quiz and test follows your syllabus and exam style. You can change it any time.</p></details>
         <details><summary>Which subjects does it work for?</summary><p>Any subject with something to read or listen to: Science, Social Science, English, Maths theory, Hindi and more. Photo Solve helps with step-by-step maths sums.</p></details>
         <details><summary>Is the AI always right?</summary><p>It is accurate most of the time, but AI can make small mistakes. Always check important facts and answers with your textbook or teacher.</p></details>
         <details><summary>Does voice recording work on my phone?</summary><p>Voice recording and Listen Mode work best in Google Chrome or Microsoft Edge, on a computer or an Android phone. On other browsers you can still type or paste.</p></details>
@@ -418,6 +434,9 @@ document.getElementById("tryForm").addEventListener("submit", e => {
   setPrefill(t ? { topic: t } : { src: "topic" });
   location.href = "app.html#new";
 });
+document.querySelectorAll("[data-board]").forEach(a => a.addEventListener("click", e => {
+  e.preventDefault(); setPrefill({ board: a.dataset.board }); location.href = "app.html#syllabus";
+}));
 document.querySelectorAll("[data-src]").forEach(a => a.addEventListener("click", e => {
   e.preventDefault(); setPrefill({ src: a.dataset.src }); location.href = "app.html#new";
 }));

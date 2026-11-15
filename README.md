@@ -19,7 +19,8 @@ It was made as a Class 9 science project.
 | Voice to Notes | Records the teacher and turns speech into text |
 | Photo Solve | Step-by-step help from a photo of a question |
 | Essay Check | Rubric marks, corrections and tips |
-| Explore | Ready-made Class 9 study sets |
+| Syllabus | Every chapter of CBSE, ICSE and Cambridge IGCSE; one tap makes a study set in that board's exam style |
+| Explore | Ready-made study sets |
 | Progress | Mastery, quiz scores over time, copy results as a table |
 
 ## How it is built
@@ -28,6 +29,7 @@ It was made as a Class 9 science project.
 - `app.html` – the whole app (runs in the browser, hosted on GitHub Pages)
 - `config.js` – the address of the AI server
 - `library.json` – the ready-made study sets shown in Explore
+- `syllabus.json` – every chapter for CBSE (Class 9–10), ICSE (Class 9–10) and Cambridge IGCSE
 - `worker/worker.js` – a small Cloudflare Worker that keeps the AI key secret and talks to Anthropic's Claude API (Claude Sonnet 5.5, with Claude Haiku 5.5 as backup)
 
 Study sets and progress are saved on the student's own device (browser storage).

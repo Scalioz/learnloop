@@ -102,6 +102,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand);b
 .tab svg{width:17px;height:17px}
 .drop{border:2px dashed var(--line);border-radius:var(--r);padding:26px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;cursor:pointer;background:var(--surface-2)}
 .drop svg{width:40px;height:40px;color:var(--brand)}
+.home-syl svg{width:26px;height:26px;color:var(--brand);flex:none}
 .empty > svg{width:44px;height:44px;color:var(--brand)}
 .drop.over{border-color:var(--brand);background:var(--brand-soft)}
 .thumbs{display:flex;gap:8px;flex-wrap:wrap}
@@ -214,7 +215,7 @@ const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { c
 const clone = o => JSON.parse(JSON.stringify(o));
 const fmtDate = t => t ? new Date(t).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "never";
 const daysAgo = t => t ? Math.floor((Date.now() - t) / 86400000) : Infinity;
-const SUBJECTS = ["Science", "Maths", "Social Science", "English", "Hindi", "Computer", "Other"];
+const SUBJECTS = ["Science", "Physics", "Chemistry", "Biology", "Maths", "Social Science", "History", "Geography", "Economics", "English", "Hindi", "Computer", "Other"];
 const LEVELS = [
   { n: "New", c: "var(--line)" }, { n: "Learning", c: "var(--bad)" },
   { n: "Almost there", c: "var(--accent)" }, { n: "Mastered", c: "var(--good)" }
@@ -240,7 +241,8 @@ const ICON = {
   back: '<path d="M15 5l-7 7 7 7"/>',
   share: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 11l7.6-4M8.2 13l7.6 4"/>',
   trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
-  upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>'
+  upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7M8 11h5"/>'
 };
 const icon = (n, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n] || ""}</svg>`;
 
@@ -372,11 +374,26 @@ async function aiJSON(prompt, opts = {}) {
   const r = await S.sample(prompt + "\n\nReply with the JSON only, no other text.", { modelTier: "default", ...opts });
   return parseLoose(r.text);
 }
-const STUDENT = "The student is in Class 9 in India (CBSE / NCERT level). Use simple, clear English and short sentences. Use everyday Indian examples where they help.";
+/* ---------- board & class ---------- */
+const PROFILE_KEY = "learnloop_profile";
+const BOARD_STYLE = {
+  cbse: (lv) => `The student is in ${lv} under CBSE in India and studies from NCERT textbooks. Use NCERT terms and the CBSE exam pattern (1, 2, 3 and 5 mark answers, case-based questions). Use simple, clear English and everyday Indian examples where they help.`,
+  icse: (lv) => `The student is in ${lv} under ICSE (CISCE) in India. Use ICSE terms and the ICSE exam style ("Give reasons", "Define", "Distinguish between", "State", numericals with units). Use simple, clear English and everyday Indian examples where they help.`,
+  igcse: () => `The student is studying Cambridge IGCSE (ages 14 to 16). Use international English, the official Cambridge command words (State, Define, Describe, Explain, Suggest, Calculate, Compare) and mark-scheme style answers with key terms. Where content is Supplement (Extended) only, label it "Extended". Use clear, simple sentences and examples that suit international students.`
+};
+const LEVEL_NAME = { "9": "Class 9", "10": "Class 10", "igcse": "IGCSE" };
+const BOARD_NAME = { cbse: "CBSE", icse: "ICSE", igcse: "Cambridge IGCSE" };
+function loadProfile() { try { const p = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null"); if (p && BOARD_STYLE[p.board]) return p; } catch (e) {} return null; }
+function saveProfile(p) { S.profile = p; try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch (e) {} }
+const profileLabel = p => p ? (p.board === "igcse" ? "Cambridge IGCSE" : `${BOARD_NAME[p.board]} ${LEVEL_NAME[p.level] || ""}`) : "Choose your board";
+function studentFor(set) {
+  const p = (set && set.board) ? { board: set.board, level: set.level } : (S.profile || { board: "cbse", level: "9" });
+  return BOARD_STYLE[p.board](LEVEL_NAME[p.level] || "Class 9");
+}
 const clip = (s, n) => (s || "").length > n ? s.slice(0, n) + "\n[...material shortened...]" : (s || "");
 function materialBlock(set) {
   return set.sourceType === "topic"
-    ? `The student only gave a topic: "${set.topic || set.title}". Use accurate Class 9 NCERT-level knowledge of this topic.`
+    ? `The student only gave a topic: "${set.topic || set.title}". Use accurate knowledge of this topic at exactly the level and depth of the student's board and class syllabus, and cover everything that syllabus expects for it.`
     : `<material>\n${clip(set.sourceText, 40000)}\n</material>`;
 }
 
@@ -384,7 +401,7 @@ const NOTES_SHAPE = `{"title": "short title, max 8 words", "subject": "one of: $
 const PRACTICE_SHAPE = `{"flashcards": [{"q": "question or term", "a": "short answer, max 25 words"}], "quiz": [{"q": "question", "options": ["A", "B", "C", "D"], "answer": 0, "explanation": "why the right answer is right, 1-2 sentences"}], "blanks": [{"sentence": "a sentence with the missing word shown as _____", "answer": "missing word or short phrase", "hint": "small hint"}], "written": [{"q": "exam-style question", "marks": 3, "modelAnswer": "a full-mark answer", "keyPoints": ["point the answer must include"]}]}`;
 
 function notesPrompt(set) {
-  return `${STUDENT}
+  return `${studentFor(typeof set === "undefined" ? null : set)}
 Make study notes from the material. Use ONLY the material (add outside facts only to explain a hard word).
 Return JSON with exactly this shape:
 ${NOTES_SHAPE}
@@ -399,7 +416,7 @@ function practicePrompt(set, which, avoid) {
     written: "4 written questions: two of 2 marks, one of 3 marks, one of 5 marks"
   };
   const want = which.map(w => "- " + parts[w]).join("\n");
-  return `${STUDENT}
+  return `${studentFor(typeof set === "undefined" ? null : set)}
 Make practice material from the material below. Every question must be answerable from the material.
 Make:
 ${want}
@@ -409,7 +426,7 @@ ${avoid ? "Do NOT repeat these earlier questions:\n" + avoid + "\n" : ""}${mater
 }
 function cleanSet(set, notes, prac) {
   if (notes) {
-    set.title = String(notes.title || set.title || "Untitled set").slice(0, 80);
+    if (!set.titleFixed) set.title = String(notes.title || set.title || "Untitled set").slice(0, 80);
     if (!set.subjectFixed) set.subject = SUBJECTS.includes(notes.subject) ? notes.subject : (set.subject || "Other");
     set.summary = String(notes.summary || "");
     set.notes = (Array.isArray(notes.notes) ? notes.notes : []).map(n => ({ heading: String(n.heading || ""), points: (n.points || []).map(String) })).filter(n => n.heading);
@@ -492,7 +509,7 @@ function paintSpeak() {
 }
 
 /* ---------- navigation ---------- */
-const NAV = [["home", "Home", "home"], ["new", "New set", "plus"], ["explore", "Explore", "explore"], ["solve", "Photo Solve", "camera"], ["essay", "Essay Check", "pen"], ["progress", "Progress", "chart"]];
+const NAV = [["home", "Home", "home"], ["new", "New set", "plus"], ["syllabus", "Syllabus", "book"], ["explore", "Explore", "explore"], ["solve", "Photo Solve", "camera"], ["essay", "Essay Check", "pen"], ["progress", "Progress", "chart"]];
 function route() { const h = location.hash.slice(1); return h || "home"; }
 window.addEventListener("hashchange", () => { window.scrollTo(0, 0); render(); });
 document.addEventListener("keydown", e => {
@@ -506,10 +523,11 @@ function render() {
   if (Dict.active && !(r === "new" && UI.newSrc === "lecture")) S.dict.stop().catch(() => {});
   const navKey = r.startsWith("set-") ? "home" : r;
   $("#nav").innerHTML = NAV.map(([k, label, ic]) => `<a href="#${k}" class="${navKey === k ? "on" : ""}" ${navKey === k ? 'aria-current="page"' : ""}>${icon(ic)}<span>${label}</span></a>`).join("");
-  $("#railFoot").innerHTML = (S.db && S.uid ? "Your study sets are saved to your account." : "Your study sets are saved on this device.") + '<br><a href="./" style="display:inline-block;margin-top:8px">About LearnLoop</a>';
+  $("#railFoot").innerHTML = `<button class="btn sm" id="boardBtn" style="width:100%;justify-content:flex-start;margin-bottom:10px">${icon("book")} ${esc(profileLabel(S.profile))}</button>` + (S.db && S.uid ? "Your study sets are saved to your account." : "Your study sets are saved on this device.") + '<br><a href="./" style="display:inline-block;margin-top:8px">About LearnLoop</a>';
+  $("#boardBtn").addEventListener("click", () => boardPicker());
   const v = $("#view");
   if (r.startsWith("set-")) return viewSet(v, r.slice(4));
-  ({ home: viewHome, new: viewNew, explore: viewExplore, solve: viewSolve, essay: viewEssay, progress: viewProgress }[r] || viewHome)(v);
+  ({ home: viewHome, new: viewNew, syllabus: viewSyllabus, explore: viewExplore, solve: viewSolve, essay: viewEssay, progress: viewProgress }[r] || viewHome)(v);
 }
 function aiBanner() {
   return S.sample ? "" : `<div class="banner">AI features are not connected yet. You can still study the sets you already have and the ones in Explore.</div>`;
@@ -545,13 +563,19 @@ function viewHome(v) {
   const qs = sets.flatMap(s => s.quizHistory || []);
   const avg = qs.length ? Math.round(qs.reduce((a, q) => a + q.score / q.total, 0) / qs.length * 100) : null;
   const due = sets.filter(isDue).sort((a, b) => mastery(a) - mastery(b));
-  const examples = [["Photosynthesis", "Science"], ["The French Revolution", "Social Science"], ["Polynomials", "Maths"], ["Atoms and Molecules", "Science"]];
+  const examples = (S.profile && S.profile.board === "igcse") ? [["Enzymes", "Biology"], ["Stoichiometry", "Chemistry"], ["Electromagnetic effects", "Physics"], ["Vectors", "Maths"]]
+    : (S.profile && S.profile.board === "icse") ? [["Refraction through a Lens", "Physics"], ["Mole Concept and Stoichiometry", "Chemistry"], ["Photosynthesis", "Biology"], ["Quadratic Equations", "Maths"]]
+    : [["Photosynthesis", "Science"], ["The French Revolution", "History"], ["Polynomials", "Maths"], ["Atoms and Molecules", "Science"]];
   v.innerHTML = `
     <div class="row between">
       <div class="stack" style="gap:4px"><h1>What are we learning today?</h1><p class="muted">Turn any lesson into notes, flashcards and quizzes. Then keep looping back until it sticks.</p></div>
       <a class="btn primary" href="#new">${icon("plus")} New study set</a>
     </div>
     ${aiBanner()}
+    <a class="card row between home-syl" href="#syllabus" style="text-decoration:none;color:inherit;background:var(--brand-soft);border-color:transparent">
+      <div class="row" style="gap:12px">${icon("book")}<div><b>Study by syllabus · ${esc(profileLabel(S.profile))}</b><div class="small muted">Every chapter of your board, ready to turn into a study set.</div></div></div>
+      <span class="btn sm primary">Open syllabus</span>
+    </a>
     ${!S.setsReady ? `<div class="card muted">Loading your study sets…</div>` : sets.length ? `
     <div class="grid g4">
       <div class="card tile"><span class="muted small">Study sets</span><span class="num">${sets.length}</span></div>
@@ -591,7 +615,7 @@ function viewNew(v) {
         : `<p class="banner small">Voice recording works in Google Chrome or Microsoft Edge (computer or Android phone). You can still paste a lecture transcript below.</p>`}
       </div>
       <label class="lbl" for="lectureText">Lecture transcript</label><textarea id="lectureText" style="min-height:200px" placeholder="Your recorded lecture will appear here...">${esc(d.lecture || "")}</textarea>`,
-    topic: `<label class="lbl" for="topicIn">What topic do you want to study?</label><input type="text" id="topicIn" placeholder="For example: Newton's laws of motion" value="${esc(d.topic || "")}"><p class="muted small" style="margin-top:6px">LearnLoop will write notes from Class 9 level knowledge of this topic.</p>`
+    topic: `<label class="lbl" for="topicIn">What topic do you want to study?</label><input type="text" id="topicIn" placeholder="For example: Newton's laws of motion" value="${esc(d.topic || "")}"><p class="muted small" style="margin-top:6px">LearnLoop will write notes at ${esc(profileLabel(S.profile))} level for this topic.</p>`
   };
   v.innerHTML = `
     <div class="stack" style="gap:4px"><h1>Create a study set</h1><p class="muted">Pick where your lesson comes from. LearnLoop makes notes, flashcards, a quiz and a practice test from it.</p></div>
@@ -691,7 +715,7 @@ async function createSet() {
   if (creating) return;
   keepDraft();
   const d = UI.draft, src = UI.newSrc, box = $("#progressBox"), btn = $("#makeBtn");
-  const set = { id: uid(), createdAt: Date.now(), updatedAt: Date.now(), sourceType: src, subject: d.subject || "", subjectFixed: !!d.subject,
+  const set = { id: uid(), createdAt: Date.now(), updatedAt: Date.now(), sourceType: src, subject: d.subject || "", subjectFixed: !!d.subject, board: S.profile ? S.profile.board : "", level: S.profile ? S.profile.level : "",
     title: "", sourceText: "", summary: "", notes: [], keyTerms: [], flashcards: [], quiz: [], blanks: [], written: [], quizHistory: [], testHistory: [], chat: [], podcast: null, lastStudied: Date.now() };
   const steps = ["Reading your material", "Writing notes", "Making flashcards, quiz and test", "Saving your study set"];
   const show = (i, extra = "") => { box.innerHTML = stepsUI(steps, i) + (extra ? `<p class="muted small" style="margin-top:8px">${esc(extra)}</p>` : ""); };
@@ -752,7 +776,7 @@ function viewSet(v, id) {
       <div class="row"><button class="btn sm" id="printBtn">${icon("notes")} Print notes</button><button class="btn sm danger" id="delBtn">${icon("trash")} Delete</button></div>
     </div>
     <div class="stack" style="gap:8px">
-      <div class="row"><span class="chip brand">${esc(set.subject || "Other")}</span><span class="chip">${esc({ text: "Notes", pdf: "PDF", photo: "Photos", youtube: "YouTube", lecture: "Lecture recording", topic: "Topic", explore: "From Explore" }[set.sourceType] || "Notes")}</span><span class="tiny muted">Made ${fmtDate(set.createdAt)}</span></div>
+      <div class="row"><span class="chip brand">${esc(set.subject || "Other")}</span><span class="chip">${esc({ text: "Notes", pdf: "PDF", photo: "Photos", youtube: "YouTube", lecture: "Lecture recording", topic: "Topic", explore: "From Explore" }[set.sourceType] || "Notes")}</span>${set.board ? `<span class="chip">${esc(profileLabel({ board: set.board, level: set.level }))}</span>` : ""}<span class="tiny muted">Made ${fmtDate(set.createdAt)}</span></div>
       <h1>${esc(set.title)}</h1>
       <div class="row small muted" style="gap:16px"><span>${(set.flashcards || []).length} flashcards</span><span>${mastery(set)}% mastered</span><span>${(set.quizHistory || []).length} quizzes taken</span></div>
     </div>
@@ -1020,7 +1044,7 @@ function tabLoopy(el, set) {
     set.chat.push({ role: "user", content: text });
     tabLoopy(el, set);
     const box = document.createElement("div"); box.className = "msg bot"; box.innerHTML = `<span class="muted">Thinking…</span>`; $("#chat").appendChild(box); $("#chat").scrollTop = 1e9;
-    const pre = `You are Loopy, a friendly study buddy. ${STUDENT}
+    const pre = `You are Loopy, a friendly study buddy. ${studentFor(typeof set === "undefined" ? null : set)}
 Answer using the study material below. If something isn't in the material, say "This isn't in your notes, but..." and give a short correct answer.
 Keep replies short (under 180 words), use bullet points and one simple example when it helps. If the student asks you to test them, ask questions one by one and wait for their answer.
 Study set: ${set.title}
@@ -1084,7 +1108,7 @@ async function makePodcast(el, set, len) {
   UI.pod[set.id] = true; tabListen(el, set);
   try {
     const n = len === "long" ? 34 : 18;
-    const r = await aiJSON(`Write a short, friendly study podcast script for a student. ${STUDENT}
+    const r = await aiJSON(`Write a short, friendly study podcast script for a student. ${studentFor(typeof set === "undefined" ? null : set)}
 Two hosts: Asha (a curious student who asks good questions) and Ravi (explains simply, with everyday Indian examples). Use ONLY facts from the material.
 About ${n} lines in total. Each line is 1 to 3 sentences and under 300 characters. Start with a quick welcome that names the topic. Cover every main idea. End with Ravi giving a 3-point recap and Asha saying goodbye. No sound effects, music cues or stage directions.
 Return JSON: {"title": "episode title", "lines": [{"speaker": "Asha", "text": "..."}, {"speaker": "Ravi", "text": "..."}]}
@@ -1109,6 +1133,82 @@ async function shareSet(set) {
     sourceType: set.sourceType, topic: set.topic || "", sourceText: clip(set.sourceText, 20000), sharedAt: Date.now(), ownerId: S.uid || "" };
   try { await S.db.collection("library").doc(set.id).set(body); toast("Shared to Explore."); }
   catch (e) { toast(e && e.code === "invalid_argument" ? "Your access level can't share to Explore." : "Couldn't share. Try again."); }
+}
+
+/* ---------- SYLLABUS ---------- */
+const subjectFor = n => SUBJECTS.includes(n) ? n : ({ "Mathematics": "Maths", "History & Civics": "History", "Civics": "Social Science", "Computer Applications": "Computer", "Computer Science": "Computer" }[n] || "Other");
+const sylKey = (b, l, sub, ch) => [b, l, sub, ch].join("|");
+const findSylSet = key => S.sets.find(x => x.syllabusKey === key);
+function sylState() {
+  const p = S.profile || { board: "cbse", level: "9" };
+  UI.syl = UI.syl || { board: p.board, level: p.level, subject: null };
+  const b = (S.syllabus && S.syllabus.boards.find(x => x.id === UI.syl.board)) || (S.syllabus && S.syllabus.boards[0]);
+  if (!b) return {};
+  let lv = b.levels.find(x => x.id === UI.syl.level) || b.levels[0];
+  UI.syl.board = b.id; UI.syl.level = lv.id;
+  let sub = lv.subjects.find(x => x.name === UI.syl.subject) || lv.subjects[0];
+  UI.syl.subject = sub.name;
+  return { b, lv, sub };
+}
+function viewSyllabus(v) {
+  if (!S.syllabus) { v.innerHTML = `<div class="card muted">Loading the syllabus…</div>`; return; }
+  const { b, lv, sub } = sylState();
+  const started = sub.chapters.filter(ch => findSylSet(sylKey(b.id, lv.id, sub.name, ch))).length;
+  v.innerHTML = `
+    <div class="stack" style="gap:4px"><h1>Syllabus</h1><p class="muted">Every chapter of your syllabus, ready to study. Tap a chapter and LearnLoop makes its notes, flashcards, quiz and test.</p></div>
+    ${aiBanner()}
+    <div class="card stack" style="gap:14px">
+      <div class="row">${S.syllabus.boards.map(x => `<button class="tab ${x.id === b.id ? "on" : ""}" data-board="${x.id}">${esc(x.full)}</button>`).join("")}</div>
+      ${b.levels.length > 1 ? `<div class="row">${b.levels.map(x => `<button class="btn sm ${x.id === lv.id ? "primary" : ""}" data-level="${x.id}">${esc(x.name)}</button>`).join("")}</div>` : ""}
+      <div class="row">${lv.subjects.map(x => `<button class="chip ${x.name === sub.name ? "brand" : ""}" style="cursor:pointer;border:none;padding:7px 13px;font-size:13.5px" data-sub="${esc(x.name)}">${esc(x.name)}${x.code ? " " + x.code : ""}</button>`).join("")}</div>
+    </div>
+    <div class="row between"><h2>${esc(sub.name)}${sub.code ? ` <span class="muted" style="font-size:16px">(${sub.code})</span>` : ""}</h2><span class="muted small">${started} of ${sub.chapters.length} chapters started</span></div>
+    <div class="stack" id="chList">${sub.chapters.map((ch, i) => {
+      const key = sylKey(b.id, lv.id, sub.name, ch), have = findSylSet(key), busy = UI.sylBusy === key;
+      return `<div class="card row" style="padding:14px 16px;gap:14px">
+        <span class="chip" style="min-width:34px;justify-content:center">${i + 1}</span>
+        <div style="flex:1;min-width:180px" class="stack"><b>${esc(ch)}</b>${have ? `<div class="row small muted" style="gap:10px"><div style="flex:1;max-width:220px">${masteryBar(have)}</div>${mastery(have)}% mastered</div>` : ""}</div>
+        ${have ? `<a class="btn sm" href="#set-${esc(have.id)}">Open</a>` : `<button class="btn sm ${busy ? "" : "primary"}" data-make="${esc(key)}" ${UI.sylBusy || !S.sample ? "disabled" : ""}>${busy ? "Making… about 1 min" : "Create study set"}</button>`}
+      </div>`; }).join("")}</div>
+    <p class="tiny muted">${esc(S.syllabus.note || "")}</p>`;
+  $$("[data-board]", v).forEach(x => x.addEventListener("click", () => { const nb = S.syllabus.boards.find(y => y.id === x.dataset.board); UI.syl = { board: nb.id, level: nb.levels[0].id, subject: null }; viewSyllabus(v); }));
+  $$("[data-level]", v).forEach(x => x.addEventListener("click", () => { UI.syl.level = x.dataset.level; UI.syl.subject = null; viewSyllabus(v); }));
+  $$("[data-sub]", v).forEach(x => x.addEventListener("click", () => { UI.syl.subject = x.dataset.sub; viewSyllabus(v); }));
+  $$("[data-make]", v).forEach(x => x.addEventListener("click", () => makeSyllabusSet(x.dataset.make, b, lv, sub)));
+}
+async function makeSyllabusSet(key, b, lv, sub) {
+  if (UI.sylBusy) return;
+  const ch = key.split("|").slice(3).join("|");
+  UI.sylBusy = key; render();
+  const set = { id: uid(), createdAt: Date.now(), updatedAt: Date.now(), sourceType: "topic", syllabusKey: key,
+    topic: `${b.full}${lv.id === "igcse" ? "" : " " + lv.name} ${sub.name}${sub.code ? " (" + sub.code + ")" : ""}, chapter: ${ch}`,
+    title: ch, titleFixed: true, subject: subjectFor(sub.name), subjectFixed: true, board: b.id, level: lv.id,
+    sourceText: "", summary: "", notes: [], keyTerms: [], flashcards: [], quiz: [], blanks: [], written: [], quizHistory: [], testHistory: [], chat: [], podcast: null, lastStudied: Date.now() };
+  try {
+    const pNotes = aiJSON(notesPrompt(set)), pPrac = aiJSON(practicePrompt(set, ["flashcards", "quiz", "blanks", "written"]));
+    cleanSet(set, await pNotes, await pPrac);
+    if (!set.flashcards.length && !set.notes.length) throw { code: "bad_json" };
+    await saveSet(set);
+    UI.sylBusy = null;
+    toast("Study set ready!");
+    location.hash = "set-" + set.id;
+  } catch (e) { UI.sylBusy = null; toast(errMsg(e)); if (route() === "syllabus") render(); }
+}
+function boardPicker(first) {
+  const cur = S.profile || { board: "cbse", level: "9" };
+  let pick = { ...cur };
+  const paint = (l) => {
+    $("#bpBody", l).innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${[["cbse", "CBSE", "NCERT textbooks"], ["icse", "ICSE", "CISCE board"], ["igcse", "Cambridge IGCSE", "International"]].map(([id, n, d]) => `<button class="card stack" data-pb="${id}" style="text-align:left;cursor:pointer;gap:2px;padding:14px;${pick.board === id ? "border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)" : ""}"><b>${n}</b><span class="small muted">${d}</span></button>`).join("")}</div>
+      ${pick.board === "igcse" ? "" : `<div class="row" style="margin-top:12px">${["9", "10"].map(lv => `<button class="btn sm ${pick.level === lv ? "primary" : ""}" data-pl="${lv}">Class ${lv}</button>`).join("")}</div>`}`;
+    $$("[data-pb]", l).forEach(x => x.addEventListener("click", () => { pick.board = x.dataset.pb; pick.level = pick.board === "igcse" ? "igcse" : (pick.level === "igcse" ? "9" : pick.level); paint(l); }));
+    $$("[data-pl]", l).forEach(x => x.addEventListener("click", () => { pick.level = x.dataset.pl; paint(l); }));
+  };
+  modal(`<h2>${first ? "Welcome to LearnLoop!" : "Your board and class"}</h2><p class="muted">Pick your board so notes, quizzes and tests follow your exam style.</p><div id="bpBody"></div>
+    <div class="row" style="justify-content:flex-end">${first ? "" : `<button class="btn ghost" data-close>Cancel</button>`}<button class="btn primary" id="bpSave">Save</button></div>`,
+    (l, close) => {
+      paint(l);
+      $("#bpSave", l).addEventListener("click", () => { saveProfile(pick); UI.syl = null; close(); toast("Set to " + profileLabel(pick)); render(); });
+    });
 }
 
 /* ---------- EXPLORE ---------- */
@@ -1173,7 +1273,7 @@ function viewSolve(v) {
     try {
       const opts = { onText: ({ text }) => { out.innerHTML = `<div class="card prose">${md(text)}</div>`; } };
       if (solveImg) opts.images = [await shrinkImage(solveImg)];
-      const r = await ai(`${STUDENT}
+      const r = await ai(`${studentFor(typeof set === "undefined" ? null : set)}
 Help the student solve this question step by step. First write the question in one line. Then number each step and explain WHY you do it. Show working for maths. End with "**Answer:**" on its own line, then one "**Try this:**" practice question of the same type (without the answer).
 ${solveImg ? "The question is in the photo." : ""}${q ? "\nStudent's note: " + q : ""}`, opts);
       out.innerHTML = `<div class="card prose">${md(r.text)}</div>`;
@@ -1202,7 +1302,7 @@ function viewEssay(v) {
     const out = $("#eOut"), btn = $("#eBtn"); btn.disabled = true; btn.textContent = "Checking…";
     out.innerHTML = `<div class="card muted">Reading your essay…</div>`;
     try {
-      const r = await aiJSON(`You are a kind but honest Class 9 English teacher in India. Check this essay.
+      const r = await aiJSON(`You are a kind but honest English teacher. ${studentFor(null)} Check this essay at that level.
 Return JSON: {"score": number out of 10, "rubric": [{"name": "Content and ideas", "score": number out of 10, "comment": "one sentence"}, {"name": "Organisation", ...}, {"name": "Language and vocabulary", ...}, {"name": "Grammar and spelling", ...}, {"name": "Creativity", ...}], "strengths": ["..."], "improvements": ["specific tip"], "mistakes": [{"original": "exact words from the essay", "fixed": "corrected words", "why": "short reason"}], "betterOpening": "a stronger first sentence the student could use"}
 List at most 6 mistakes. Keep every comment short and simple.
 ${$("#eTopic").value.trim() ? "Topic: " + $("#eTopic").value.trim() + "\n" : ""}Essay:
@@ -1389,10 +1489,13 @@ async function boot() {
   S.tts = makeTts(); S.dict = makeDictation();
   setupDictation(); setupTts();
   S.sets = lsLoad(); S.setsReady = true;
+  S.profile = loadProfile();
+  fetch("syllabus.json", { cache: "no-cache" }).then(r => r.json()).then(j => { S.syllabus = j; if (route() === "syllabus") render(); }).catch(() => { S.syllabus = { boards: [] }; });
   try {
     const pre = JSON.parse(localStorage.getItem("learnloop_prefill") || "null");
     localStorage.removeItem("learnloop_prefill");
-    if (pre && pre.topic) { UI.newSrc = "topic"; UI.draft.topic = String(pre.topic).slice(0, 120); if (route() !== "new") location.hash = "new"; }
+    if (pre && pre.board && BOARD_STYLE[pre.board]) { saveProfile({ board: pre.board, level: pre.board === "igcse" ? "igcse" : (pre.level || "9") }); UI.syl = null; if (route() !== "syllabus") location.hash = "syllabus"; }
+    else if (pre && pre.topic) { UI.newSrc = "topic"; UI.draft.topic = String(pre.topic).slice(0, 120); if (route() !== "new") location.hash = "new"; }
     else if (pre && pre.src && SRC.some(x => x[0] === pre.src)) { UI.newSrc = pre.src; if (route() !== "new") location.hash = "new"; }
   } catch (e) {}
   render();
@@ -1401,6 +1504,7 @@ async function boot() {
     const j = await r.json();
     S.library = (j.sets || []).slice().sort((a, b) => (b.sharedAt || 0) - (a.sharedAt || 0));
   } catch (e) { S.library = []; }
+  if (!S.profile) boardPicker(true);
   S.libReady = true;
   if (route() === "explore") render();
 }
