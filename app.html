@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LearnLoop App</title>
+<meta name="description" content="LearnLoop turns any lesson into notes, flashcards, quizzes, practice tests and a podcast.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 34 34%27%3E%3Crect width=%2734%27 height=%2734%27 rx=%2710%27 fill=%27%230D5C6C%27/%3E%3Cpath d=%27M10 17a7 7 0 1 1 7 7%27 fill=%27none%27 stroke=%27%23E39A0B%27 stroke-width=%273.2%27 stroke-linecap=%27round%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: left rail on desktop, bottom tab bar on phones; one working column of cards */
+  --bg:#F3F6F5; --surface:#FFFFFF; --surface-2:#EEF3F2; --ink:#14252C; --muted:#5A6B71; --line:#D9E2E0;
+  --brand:#0D5C6C; --brand-ink:#FFFFFF; --brand-soft:#DDEEF1;
+  --accent:#E39A0B; --accent-soft:#FCF0D6;
+  --good:#23845A; --good-soft:#E0F2E8; --bad:#C2412F; --bad-soft:#FBE6E2;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Nunito Sans","Segoe UI",system-ui,sans-serif;
+  --r:14px; --shadow:0 1px 2px rgba(20,37,44,.06),0 4px 14px rgba(20,37,44,.05);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A1E; --surface:#16252B; --surface-2:#1C2E35; --ink:#E6EEEC; --muted:#9AAEB3; --line:#2A3F46;
+    --brand:#4FB3C4; --brand-ink:#08262D; --brand-soft:#173840;
+    --accent:#F2B441; --accent-soft:#3A2F14;
+    --good:#4CC28A; --good-soft:#163527; --bad:#EF7A68; --bad-soft:#3D1F1A;
+    --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A1E; --surface:#16252B; --surface-2:#1C2E35; --ink:#E6EEEC; --muted:#9AAEB3; --line:#2A3F46;
+  --brand:#4FB3C4; --brand-ink:#08262D; --brand-soft:#173840;
+  --accent:#F2B441; --accent-soft:#3A2F14;
+  --good:#4CC28A; --good-soft:#163527; --bad:#EF7A68; --bad-soft:#3D1F1A;
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:30px;font-weight:800} h2{font-size:22px;font-weight:800} h3{font-size:18px;font-weight:600}
+p{margin:0}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+a{color:var(--brand)}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100%}
+.rail{position:sticky;top:0;height:100vh;padding:22px 14px;border-right:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 10px 18px;font-family:var(--display);font-weight:800;font-size:22px;color:var(--ink);text-decoration:none}
+.logo svg{flex:none}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:700}
+.nav a:hover{background:var(--surface-2);color:var(--ink)}
+.nav a.on{background:var(--brand-soft);color:var(--brand)}
+.nav svg{width:20px;height:20px;flex:none}
+.rail-foot{margin-top:auto;font-size:13px;color:var(--muted);padding:0 10px}
+main{min-width:0;padding:28px 32px 60px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.muted{color:var(--muted)} .small{font-size:14px} .tiny{font-size:12.5px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer;text-decoration:none;color:var(--ink);min-height:42px}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#2A1B00}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--ink);background:var(--surface-2)}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:6px 11px;min-height:34px;font-size:14px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn svg{width:18px;height:18px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:800;background:var(--surface-2);color:var(--muted);letter-spacing:.01em}
+.chip.brand{background:var(--brand-soft);color:var(--brand)}
+.chip.accent{background:var(--accent-soft);color:#8A5A00}
+:root[data-theme="dark"] .chip.accent{color:var(--accent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.accent{color:var(--accent)}}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.tile{display:flex;flex-direction:column;gap:2px}
+.tile .num{font-family:var(--display);font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;display:flex}
+.bar > span{display:block;height:100%}
+.setcard{cursor:pointer;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
+.setcard:hover{border-color:var(--brand)}
+.setcard h3{font-size:17px}
+label.lbl{font-weight:800;font-size:14px;display:block;margin-bottom:6px}
+input[type=text],input[type=search],textarea,select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+textarea{resize:vertical;min-height:120px;line-height:1.5}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tab{border:1px solid transparent;background:transparent;padding:8px 14px;border-radius:10px;font-weight:800;color:var(--muted);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.tab:hover{background:var(--surface-2);color:var(--ink)}
+.tab.on{background:var(--ink);color:var(--surface)}
+.tab svg{width:17px;height:17px}
+.drop{border:2px dashed var(--line);border-radius:var(--r);padding:26px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;cursor:pointer;background:var(--surface-2)}
+.drop svg{width:40px;height:40px;color:var(--brand)}
+.empty > svg{width:44px;height:44px;color:var(--brand)}
+.drop.over{border-color:var(--brand);background:var(--brand-soft)}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumbs img{width:86px;height:86px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:10px;align-items:center;color:var(--muted)}
+.step .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none;font-size:12px}
+.step.doing{color:var(--ink);font-weight:700}
+.step.doing .dot{border-color:var(--accent);border-top-color:transparent;animation:spin 0.9s linear infinite}
+.step.done{color:var(--good)} .step.done .dot{background:var(--good);border-color:var(--good);color:#fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.step.doing .dot{animation:none}}
+.prose{display:flex;flex-direction:column;gap:8px}
+.prose h4{font-family:var(--display);font-size:17px;margin:8px 0 0}
+.prose ul,.prose ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.prose p{max-width:68ch}
+.prose code{background:var(--surface-2);padding:1px 5px;border-radius:5px}
+.terms{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.term{padding:12px 14px;border-radius:12px;background:var(--surface-2)}
+.term b{display:block;font-family:var(--display);font-size:16px}
+.flash-wrap{perspective:1200px}
+.flash{position:relative;min-height:260px;cursor:pointer;transform-style:preserve-3d;transition:transform .45s}
+.flash.flipped{transform:rotateY(180deg)}
+.flash .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;padding:28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
+.flash .back{transform:rotateY(180deg);background:var(--brand-soft)}
+.flash .face .big{font-family:var(--display);font-size:22px;font-weight:600;max-width:52ch;text-wrap:balance}
+.flash .face .lab{position:absolute;top:14px;left:18px}
+@media (prefers-reduced-motion:reduce){.flash{transition:none}}
+.match{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.mt{min-height:96px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:14px;font-weight:600;text-align:left}
+.mt.a{background:var(--surface-2)}
+.mt.sel{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.mt.gone{visibility:hidden}
+.mt.wrong{border-color:var(--bad);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;font-weight:600}
+.opt:hover{border-color:var(--brand)}
+.opt .k{width:26px;height:26px;border-radius:7px;background:var(--surface-2);display:grid;place-items:center;font-size:13px;font-weight:800;flex:none}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrongpick{border-color:var(--bad);background:var(--bad-soft)}
+.opt[disabled]{cursor:default}
+.fb{padding:12px 14px;border-radius:12px}
+.fb.good{background:var(--good-soft)} .fb.bad{background:var(--bad-soft)}
+.chat{display:flex;flex-direction:column;gap:12px;min-height:260px;max-height:58vh;overflow-y:auto;padding:4px}
+.msg{max-width:84%;padding:11px 14px;border-radius:14px}
+.msg.me{align-self:flex-end;background:var(--brand);color:var(--brand-ink);border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-start;background:var(--surface-2);border-bottom-left-radius:4px}
+.composer{display:flex;gap:8px;align-items:flex-end}
+.composer textarea{min-height:48px;height:48px}
+.line{padding:10px 12px;border-radius:10px;display:flex;gap:10px}
+.line b{min-width:44px;font-family:var(--display)}
+.line.now{background:var(--accent-soft)}
+.mic.on{background:var(--bad);border-color:var(--bad);color:#fff}
+.recbtn{width:92px;height:92px;border-radius:50%;border:none;background:var(--bad);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 0 0 8px var(--bad-soft)}
+.recbtn.on{animation:pulse 1.4s ease-in-out infinite}
+.recbtn svg{width:36px;height:36px}
+@keyframes pulse{50%{box-shadow:0 0 0 16px var(--bad-soft)}}
+@media (prefers-reduced-motion:reduce){.recbtn.on{animation:none}}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.n{font-variant-numeric:tabular-nums}
+.tablebox{overflow-x:auto}
+.banner{padding:12px 16px;border-radius:12px;background:var(--accent-soft);font-size:14.5px}
+.empty{text-align:center;padding:36px 18px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:11px 18px;border-radius:12px;font-weight:700;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,.2);max-width:90vw}
+.modal-bg{position:fixed;inset:0;background:rgba(10,20,24,.45);display:grid;place-items:center;z-index:40;padding:16px}
+.modal{background:var(--surface);border-radius:18px;padding:22px;max-width:620px;width:100%;max-height:86vh;overflow:auto;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+@media print{.rail,.tabs,#layer,.toast,.btn,.banner{display:none!important}.app{display:block}main{padding:0}body{background:#fff;color:#000}.card{box-shadow:none;break-inside:avoid}}
+.score-ring{font-family:var(--display);font-size:46px;font-weight:800;font-variant-numeric:tabular-nums}
+.kbd{font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--muted)}
+details summary{cursor:pointer;font-weight:700}
+.src{white-space:pre-wrap;font-size:14px;max-height:300px;overflow:auto;background:var(--surface-2);padding:12px;border-radius:10px;margin-top:8px}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  .rail{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-right:none;border-top:1px solid var(--line);z-index:30}
+  .logo,.rail-foot{display:none}
+  .nav{flex-direction:row;width:100%;justify-content:space-around;gap:0}
+  .nav a{flex-direction:column;gap:2px;padding:6px 4px;font-size:11px;flex:1;text-align:center}
+  main{padding:18px 16px 96px}
+  h1{font-size:25px}
+  .flash{min-height:230px}
+  .msg{max-width:92%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <a class="logo" href="#home" aria-label="LearnLoop home">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="10" fill="var(--brand)"/><path d="M10 17a7 7 0 1 1 7 7" fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round"/><path d="M17 20.5l-3.6 3.5 3.6 3.4" fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      LearnLoop
+    </a>
+    <nav class="nav" id="nav"></nav>
+    <div class="rail-foot" id="railFoot"></div>
+  </aside>
+  <main><div class="wrap" id="view"></div></main>
+</div>
+<div id="layer"></div>
+<script src="config.js"></script>
+<script>
+"use strict";
+/* ---------- tiny helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const uid = () => "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const clone = o => JSON.parse(JSON.stringify(o));
+const fmtDate = t => t ? new Date(t).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "never";
+const daysAgo = t => t ? Math.floor((Date.now() - t) / 86400000) : Infinity;
+const SUBJECTS = ["Science", "Maths", "Social Science", "English", "Hindi", "Computer", "Other"];
+const LEVELS = [
+  { n: "New", c: "var(--line)" }, { n: "Learning", c: "var(--bad)" },
+  { n: "Almost there", c: "var(--accent)" }, { n: "Mastered", c: "var(--good)" }
+];
+const ICON = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  explore: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  notes: '<path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7M9 7h3"/>',
+  cards: '<rect x="3" y="6" width="14" height="13" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v11"/>',
+  quiz: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.2v.3"/>',
+  test: '<path d="M5 4h14v16H5z"/><path d="M8 9l2 2 4-4M8 15h8"/>',
+  chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+  head: '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  play: '<path d="M7 4l13 8-13 8z"/>',
+  pause: '<path d="M7 4h4v16H7zM14 4h4v16h-4z"/>',
+  stop: '<rect x="6" y="6" width="12" height="12" rx="1.5"/>',
+  speaker: '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  share: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 11l7.6-4M8.2 13l7.6 4"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>'
+};
+const icon = (n, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n] || ""}</svg>`;
+
+/* tiny, safe markdown: escape first, then format */
+function md(t) {
+  const inline = s => s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/`([^`]+)`/g, "<code>$1</code>");
+  let out = "", list = null;
+  for (const raw of esc(t).split(/\n/)) {
+    const ln = raw.trimEnd(); let m;
+    if ((m = ln.match(/^\s*[-*•]\s+(.*)/))) { if (list !== "ul") { if (list) out += `</${list}>`; out += "<ul>"; list = "ul"; } out += `<li>${inline(m[1])}</li>`; continue; }
+    if ((m = ln.match(/^\s*\d+[.)]\s+(.*)/))) { if (list !== "ol") { if (list) out += `</${list}>`; out += "<ol>"; list = "ol"; } out += `<li>${inline(m[1])}</li>`; continue; }
+    if (list) { out += `</${list}>`; list = null; }
+    if ((m = ln.match(/^#{1,4}\s+(.*)/))) { out += `<h4>${inline(m[1])}</h4>`; continue; }
+    if (!ln.trim()) continue;
+    out += `<p>${inline(ln)}</p>`;
+  }
+  if (list) out += `</${list}>`;
+  return out;
+}
+function lev(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+const normAns = s => String(s || "").toLowerCase().replace(/[^\p{L}\p{N} ]/gu, " ").replace(/\s+/g, " ").trim();
+function answerMatches(given, correct) {
+  const a = normAns(given), b = normAns(correct);
+  if (!a) return false;
+  if (a === b) return true;
+  return b.length > 4 && lev(a, b) <= 1;
+}
+
+/* ---------- state ---------- */
+const S = { db: null, user: null, uid: null, sample: null, tts: null, dict: null, imagesOk: false, canWrite: true,
+  sets: [], setsReady: false, setsNote: "", library: [], libReady: false, dictDenied: false, ttsOff: false };
+const UI = { tab: {}, fc: {}, qz: {}, ts: {}, chatBusy: {}, pod: {}, newSrc: "text", draft: {}, keyHandler: null, exploreSubject: "All", exploreQ: "" };
+
+/* ---------- toast & modal ---------- */
+let toastT;
+function toast(msg) {
+  clearTimeout(toastT);
+  let el = $("#toast"); if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+  el.textContent = msg; el.hidden = false;
+  toastT = setTimeout(() => { el.hidden = true; }, 3600);
+}
+function modal(html, onMount) {
+  const layer = $("#layer");
+  layer.innerHTML = `<div class="modal-bg" id="mbg"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
+  const close = () => { layer.innerHTML = ""; };
+  $("#mbg").addEventListener("click", e => { if (e.target.id === "mbg") close(); });
+  $$("[data-close]", layer).forEach(b => b.addEventListener("click", close));
+  onMount && onMount(layer, close);
+  return close;
+}
+function confirmBox(title, text, okLabel, danger) {
+  return new Promise(res => {
+    modal(`<h2>${esc(title)}</h2><p class="muted">${esc(text)}</p><div class="row" style="justify-content:flex-end"><button class="btn ghost" data-close>Cancel</button><button class="btn ${danger ? "danger" : "primary"}" id="okb">${esc(okLabel)}</button></div>`,
+      (l, close) => { $("#okb", l).addEventListener("click", () => { close(); res(true); }); $$("[data-close]", l).forEach(b => b.addEventListener("click", () => res(false))); });
+  });
+}
+
+/* ---------- storage ---------- */
+const LS_KEY = "learnloop_sets_v1";
+function lsLoad() { try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch (e) { return []; } }
+function lsSave() { try { localStorage.setItem(LS_KEY, JSON.stringify(S.sets)); } catch (e) { toast("Couldn't save in this browser."); } }
+const myCol = () => S.db.collection("data/users/" + S.uid);
+const writeQ = new Map(), saveTimers = new Map();
+async function writeSet(body) {
+  try { await myCol().doc(body.id).set(body); }
+  catch (e) {
+    if (e && e.code === "unavailable") { await sleep(700 + Math.random() * 900); try { await myCol().doc(body.id).set(body); return; } catch (e2) { e = e2; } }
+    if (e && e.code === "quota_exceeded") toast("Storage is full. Delete an old study set to make room.");
+    else if (e && e.code === "invalid_argument") { S.canWrite = false; toast("Your access level can't save study sets. Ask the owner to make you a Contributor."); }
+    else toast("Couldn't save your changes. Check your connection.");
+  }
+}
+async function saveSet(set) {
+  set.updatedAt = Date.now();
+  const i = S.sets.findIndex(s => s.id === set.id); if (i < 0) S.sets.unshift(set); else S.sets[i] = set;
+  if (!(S.db && S.uid)) { lsSave(); return; }
+  let q = writeQ.get(set.id); if (!q) { q = { busy: false, pending: null }; writeQ.set(set.id, q); }
+  q.pending = clone(set);
+  if (q.busy) return;
+  q.busy = true;
+  while (q.pending) { const body = q.pending; q.pending = null; await writeSet(body); }
+  q.busy = false;
+}
+function saveSetSoon(set) {
+  clearTimeout(saveTimers.get(set.id));
+  saveTimers.set(set.id, setTimeout(() => { saveTimers.delete(set.id); saveSet(set); }, 1200));
+}
+async function deleteSet(set) {
+  S.sets = S.sets.filter(s => s.id !== set.id);
+  if (S.db && S.uid) { try { await myCol().doc(set.id).delete(); } catch (e) { toast("Couldn't delete. Try again."); } }
+  else lsSave();
+}
+const getSet = id => S.sets.find(s => s.id === id);
+
+/* ---------- AI ---------- */
+function errMsg(e) {
+  const c = e && e.code;
+  if (c === "no_ai") return "The AI server isn't connected yet. The app owner needs to finish setup.";
+  if (c === "network") return "Can't reach the AI server. Check your internet and try again.";
+  if (c === "no_key" || c === "forbidden_origin") return "The AI server isn't set up correctly. Please tell the app owner.";
+  if (c === "too_large") return "That file is too big. Try fewer pages or smaller photos.";
+  if (c === "rate_limited") return "Too many requests right now. Wait a minute and try again.";
+  if (c === "bad_json") return "The AI reply came back in the wrong shape. Please try again.";
+  if (e && e.message && !c) return "Something went wrong: " + e.message;
+  return "Something went wrong (" + (c || "unknown") + (e && e.detail ? ": " + e.detail : "") + "). Please try again.";
+}
+function parseLoose(text) {
+  const t = String(text || "").replace(/```json|```/g, "");
+  const a = t.indexOf("{"), b = t.lastIndexOf("}");
+  if (a < 0 || b < a) throw { code: "bad_json" };
+  try { return JSON.parse(t.slice(a, b + 1)); } catch (e) { throw { code: "bad_json" }; }
+}
+async function ai(input, opts = {}) {
+  if (!S.sample) throw { code: "no_ai" };
+  return await S.sample(input, { modelTier: "default", ...opts });
+}
+async function aiJSON(prompt, opts = {}) {
+  if (!S.sample) throw { code: "no_ai" };
+  if (typeof S.sample.json === "function") {
+    try { const v = await S.sample.json(prompt, { modelTier: "default", ...opts }); if (v && typeof v === "object") return v; }
+    catch (e) { if (e && (e.code === "not_granted" || e.code === "rate_limited")) throw e; }
+  }
+  const r = await S.sample(prompt + "\n\nReply with the JSON only, no other text.", { modelTier: "default", ...opts });
+  return parseLoose(r.text);
+}
+const STUDENT = "The student is in Class 9 in India (CBSE / NCERT level). Use simple, clear English and short sentences. Use everyday Indian examples where they help.";
+const clip = (s, n) => (s || "").length > n ? s.slice(0, n) + "\n[...material shortened...]" : (s || "");
+function materialBlock(set) {
+  return set.sourceType === "topic"
+    ? `The student only gave a topic: "${set.topic || set.title}". Use accurate Class 9 NCERT-level knowledge of this topic.`
+    : `<material>\n${clip(set.sourceText, 40000)}\n</material>`;
+}
+
+const NOTES_SHAPE = `{"title": "short title, max 8 words", "subject": "one of: ${SUBJECTS.join(", ")}", "summary": "3 to 5 simple sentences", "notes": [{"heading": "section heading", "points": ["short point", "..."]}], "keyTerms": [{"term": "word", "meaning": "simple meaning in one sentence"}]}`;
+const PRACTICE_SHAPE = `{"flashcards": [{"q": "question or term", "a": "short answer, max 25 words"}], "quiz": [{"q": "question", "options": ["A", "B", "C", "D"], "answer": 0, "explanation": "why the right answer is right, 1-2 sentences"}], "blanks": [{"sentence": "a sentence with the missing word shown as _____", "answer": "missing word or short phrase", "hint": "small hint"}], "written": [{"q": "exam-style question", "marks": 3, "modelAnswer": "a full-mark answer", "keyPoints": ["point the answer must include"]}]}`;
+
+function notesPrompt(set) {
+  return `${STUDENT}
+Make study notes from the material. Use ONLY the material (add outside facts only to explain a hard word).
+Return JSON with exactly this shape:
+${NOTES_SHAPE}
+Rules: 4 to 8 note sections, 3 to 6 points each; 6 to 12 key terms.
+${materialBlock(set)}`;
+}
+function practicePrompt(set, which, avoid) {
+  const parts = {
+    flashcards: "16 to 20 flashcards",
+    quiz: "10 multiple-choice questions with 4 options each; \"answer\" is the 0-based index of the right option; mix easy and tricky",
+    blanks: "6 fill-in-the-blank sentences",
+    written: "4 written questions: two of 2 marks, one of 3 marks, one of 5 marks"
+  };
+  const want = which.map(w => "- " + parts[w]).join("\n");
+  return `${STUDENT}
+Make practice material from the material below. Every question must be answerable from the material.
+Make:
+${want}
+Return JSON with this shape (include only the keys asked for):
+${PRACTICE_SHAPE}
+${avoid ? "Do NOT repeat these earlier questions:\n" + avoid + "\n" : ""}${materialBlock(set)}`;
+}
+function cleanSet(set, notes, prac) {
+  if (notes) {
+    set.title = String(notes.title || set.title || "Untitled set").slice(0, 80);
+    if (!set.subjectFixed) set.subject = SUBJECTS.includes(notes.subject) ? notes.subject : (set.subject || "Other");
+    set.summary = String(notes.summary || "");
+    set.notes = (Array.isArray(notes.notes) ? notes.notes : []).map(n => ({ heading: String(n.heading || ""), points: (n.points || []).map(String) })).filter(n => n.heading);
+    set.keyTerms = (Array.isArray(notes.keyTerms) ? notes.keyTerms : []).map(k => ({ term: String(k.term || ""), meaning: String(k.meaning || "") })).filter(k => k.term);
+  }
+  if (prac) {
+    if (prac.flashcards) set.flashcards = prac.flashcards.filter(c => c && c.q && c.a).map(c => ({ id: uid(), q: String(c.q), a: String(c.a), m: 0 }));
+    if (prac.quiz) set.quiz = prac.quiz.filter(q => q && q.q && Array.isArray(q.options) && q.options.length >= 2).map(q => ({ q: String(q.q), options: q.options.map(String).slice(0, 4), answer: Math.max(0, Math.min(Number(q.answer) || 0, q.options.length - 1)), explanation: String(q.explanation || "") }));
+    if (prac.blanks) set.blanks = prac.blanks.filter(b => b && b.sentence && b.answer).map(b => ({ sentence: String(b.sentence), answer: String(b.answer), hint: String(b.hint || "") }));
+    if (prac.written) set.written = prac.written.filter(w => w && w.q).map(w => ({ q: String(w.q), marks: Number(w.marks) || 2, modelAnswer: String(w.modelAnswer || ""), keyPoints: (w.keyPoints || []).map(String) }));
+  }
+  return set;
+}
+
+/* ---------- capability wiring: dictation & tts ---------- */
+const Dict = { target: null, base: "", active: false, started: 0, onStop: null };
+function setupDictation() {
+  if (!S.dict) return;
+  const join = (a, b) => a + (a && !/\s$/.test(a) && b ? " " : "") + b;
+  S.dict.onPartial(({ text }) => { if (Dict.target) Dict.target.value = join(Dict.base, text); });
+  S.dict.onFinal(({ text }) => { if (!Dict.target) return; Dict.base = join(Dict.base, text); Dict.target.value = Dict.base; Dict.target.dispatchEvent(new Event("input", { bubbles: true })); });
+  S.dict.onState(({ state }) => {
+    Dict.active = state === "listening";
+    if (Dict.active && !Dict.started) Dict.started = Date.now();
+    if (!Dict.active) { const cb = Dict.onStop; Dict.target = null; Dict.started = 0; Dict.onStop = null; cb && cb(); }
+    paintMics();
+  });
+}
+function micStart(textarea, onStop) {
+  if (!S.dict || S.dictDenied) return;
+  if (Dict.active) { const same = Dict.target === textarea; S.dict.stop().catch(() => {}); if (same) return; }
+  Dict.target = textarea; Dict.base = textarea.value; Dict.onStop = onStop || null; Dict.started = 0;
+  S.dict.start().catch(e => {
+    if (e && e.code === "not_granted") { S.dictDenied = true; toast("Microphone was not allowed. You can still type."); }
+    else if (e && e.code !== "dismissed") toast("Couldn't start the microphone.");
+    Dict.target = null; paintMics();
+  });
+  paintMics();
+}
+function paintMics() {
+  $$("[data-mic-for]").forEach(b => {
+    const on = Dict.active && Dict.target && Dict.target.id === b.dataset.micFor;
+    b.classList.toggle("on", !!on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+    b.hidden = !S.dict || S.dictDenied;
+  });
+  const rb = $("#recBtn");
+  if (rb) { const on = Dict.active && Dict.target && Dict.target.id === "lectureText"; rb.classList.toggle("on", !!on); $("#recLabel").textContent = on ? "Listening… tap to stop" : "Tap to start recording"; }
+}
+const micBtn = id => `<button type="button" class="btn sm mic" data-mic-for="${id}" title="Speak instead of typing" aria-label="Speak instead of typing" hidden>${icon("mic")}</button>`;
+function wireMics(root = document) {
+  $$("[data-mic-for]", root).forEach(b => b.addEventListener("click", () => micStart(document.getElementById(b.dataset.micFor))));
+  paintMics();
+}
+setInterval(() => { const t = $("#recTime"); if (t) { const s = Dict.active && Dict.target && Dict.target.id === "lectureText" && Dict.started ? Math.floor((Date.now() - Dict.started) / 1000) : null; t.textContent = s == null ? "" : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; } }, 500);
+
+const Speak = { state: "idle", owner: null, lineId: null };
+function setupTts() {
+  if (!S.tts) return;
+  S.tts.onState(({ state }) => { Speak.state = state; if (state === "idle") { Speak.owner = null; Speak.lineId = null; } paintSpeak(); });
+  if (S.tts.onLine) S.tts.onLine(({ id }) => { Speak.lineId = id || null; paintSpeak(); });
+}
+function speakErr(e) {
+  if (!e) return;
+  if (e.code === "not_granted") { S.ttsOff = true; toast("Audio is turned off for this page."); render(); }
+  else if (e.code === "busy") toast("Stop the microphone first, then press play.");
+  else if (e.code === "rate_limited") toast("Too many audio requests. Wait a moment.");
+}
+function speakText(text, owner) {
+  if (!S.tts) return;
+  Speak.owner = owner;
+  S.tts.speak(String(text).slice(0, 2000)).catch(speakErr);
+  paintSpeak();
+}
+function paintSpeak() {
+  $$("[data-speak]").forEach(b => { const on = Speak.state !== "idle" && Speak.owner === b.dataset.speak; b.innerHTML = on ? icon("stop") + " Stop" : icon("speaker") + " " + esc(b.dataset.label || "Listen"); });
+  $$(".line[data-lid]").forEach(l => l.classList.toggle("now", l.dataset.lid === Speak.lineId));
+  const now = Speak.lineId && $(`.line[data-lid="${Speak.lineId}"]`); if (now && Speak.state === "speaking") now.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  const pb = $("#podPlay"); if (pb) { const mine = Speak.owner && Speak.owner.startsWith("pod:"); pb.innerHTML = mine && Speak.state === "speaking" ? icon("pause") + " Pause" : icon("play") + (mine && Speak.state === "paused" ? " Resume" : " Play podcast"); }
+}
+
+/* ---------- navigation ---------- */
+const NAV = [["home", "Home", "home"], ["new", "New set", "plus"], ["explore", "Explore", "explore"], ["solve", "Photo Solve", "camera"], ["essay", "Essay Check", "pen"], ["progress", "Progress", "chart"]];
+function route() { const h = location.hash.slice(1); return h || "home"; }
+window.addEventListener("hashchange", () => { window.scrollTo(0, 0); render(); });
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input,textarea,select")) return;
+  UI.keyHandler && UI.keyHandler(e);
+});
+
+function render() {
+  const r = route();
+  UI.keyHandler = null;
+  if (Dict.active && !(r === "new" && UI.newSrc === "lecture")) S.dict.stop().catch(() => {});
+  const navKey = r.startsWith("set-") ? "home" : r;
+  $("#nav").innerHTML = NAV.map(([k, label, ic]) => `<a href="#${k}" class="${navKey === k ? "on" : ""}" ${navKey === k ? 'aria-current="page"' : ""}>${icon(ic)}<span>${label}</span></a>`).join("");
+  $("#railFoot").innerHTML = (S.db && S.uid ? "Your study sets are saved to your account." : "Your study sets are saved on this device.") + '<br><a href="./" style="display:inline-block;margin-top:8px">About LearnLoop</a>';
+  const v = $("#view");
+  if (r.startsWith("set-")) return viewSet(v, r.slice(4));
+  ({ home: viewHome, new: viewNew, explore: viewExplore, solve: viewSolve, essay: viewEssay, progress: viewProgress }[r] || viewHome)(v);
+}
+function aiBanner() {
+  return S.sample ? "" : `<div class="banner">AI features are not connected yet. You can still study the sets you already have and the ones in Explore.</div>`;
+}
+
+/* ---------- stats helpers ---------- */
+function mastery(set) { const c = set.flashcards || []; if (!c.length) return 0; return Math.round(c.reduce((a, x) => a + (x.m || 0), 0) / (c.length * 3) * 100); }
+function levelCounts(set) { const n = [0, 0, 0, 0]; (set.flashcards || []).forEach(c => n[c.m || 0]++); return n; }
+function masteryBar(set) {
+  const n = levelCounts(set), t = n.reduce((a, b) => a + b, 0) || 1;
+  return `<div class="bar" role="img" aria-label="${n[3]} of ${t} cards mastered">${n.map((x, i) => `<span style="width:${x / t * 100}%;background:${LEVELS[i].c}"></span>`).join("")}</div>`;
+}
+const lastQuiz = set => (set.quizHistory || []).slice(-1)[0];
+const isDue = set => (set.flashcards || []).length && (mastery(set) < 70 || daysAgo(set.lastStudied || set.createdAt) >= 3);
+
+/* ---------- HOME ---------- */
+function setCard(s) {
+  const q = lastQuiz(s);
+  return `<div class="card setcard" tabindex="0" role="link" data-open="${esc(s.id)}">
+    <div class="row between"><span class="chip brand">${esc(s.subject || "Other")}</span>${isDue(s) ? '<span class="chip accent">Revise</span>' : ""}</div>
+    <h3>${esc(s.title)}</h3>
+    ${masteryBar(s)}
+    <div class="row between tiny muted"><span>${(s.flashcards || []).length} cards · ${mastery(s)}% mastered</span><span>${q ? "Last quiz " + Math.round(q.score / q.total * 100) + "%" : "No quiz yet"}</span></div>
+  </div>`;
+}
+function wireSetCards(v) {
+  $$("[data-open]", v).forEach(el => { const go = () => location.hash = "set-" + el.dataset.open; el.addEventListener("click", go); el.addEventListener("keydown", e => { if (e.key === "Enter") go(); }); });
+}
+function viewHome(v) {
+  const sets = S.sets.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  const cards = sets.reduce((a, s) => a + (s.flashcards || []).length, 0);
+  const mastered = sets.reduce((a, s) => a + levelCounts(s)[3], 0);
+  const qs = sets.flatMap(s => s.quizHistory || []);
+  const avg = qs.length ? Math.round(qs.reduce((a, q) => a + q.score / q.total, 0) / qs.length * 100) : null;
+  const due = sets.filter(isDue).sort((a, b) => mastery(a) - mastery(b));
+  const examples = [["Photosynthesis", "Science"], ["The French Revolution", "Social Science"], ["Polynomials", "Maths"], ["Atoms and Molecules", "Science"]];
+  v.innerHTML = `
+    <div class="row between">
+      <div class="stack" style="gap:4px"><h1>What are we learning today?</h1><p class="muted">Turn any lesson into notes, flashcards and quizzes. Then keep looping back until it sticks.</p></div>
+      <a class="btn primary" href="#new">${icon("plus")} New study set</a>
+    </div>
+    ${aiBanner()}
+    ${!S.setsReady ? `<div class="card muted">Loading your study sets…</div>` : sets.length ? `
+    <div class="grid g4">
+      <div class="card tile"><span class="muted small">Study sets</span><span class="num">${sets.length}</span></div>
+      <div class="card tile"><span class="muted small">Cards mastered</span><span class="num">${mastered}<span class="muted" style="font-size:18px"> / ${cards}</span></span></div>
+      <div class="card tile"><span class="muted small">Average quiz score</span><span class="num">${avg == null ? "–" : avg + "%"}</span></div>
+      <div class="card tile"><span class="muted small">Due for revision</span><span class="num">${due.length}</span></div>
+    </div>
+    ${due.length ? `<div class="stack"><h2>Revise next</h2><p class="muted small">These sets are less than 70% mastered or haven't been opened for 3 days. Revising now beats the forgetting curve.</p><div class="grid g2">${due.slice(0, 4).map(setCard).join("")}</div></div>` : ""}
+    <div class="stack"><h2>All study sets</h2><div class="grid g2">${sets.map(setCard).join("")}</div></div>` : `
+    <div class="card empty">
+      <h2>Make your first study set</h2>
+      <p class="muted" style="max-width:52ch">Paste notes, upload a PDF, snap your textbook, record your teacher, or just type a topic. LearnLoop does the rest.</p>
+      <div class="row" style="justify-content:center">${examples.map(([t, s]) => `<button class="btn sm" data-topic="${esc(t)}" data-subj="${esc(s)}">Try: ${esc(t)}</button>`).join("")}</div>
+    </div>`}
+  `;
+  v.insertAdjacentHTML("beforeend", `<p class="tiny muted" style="text-align:center;margin-top:12px">LearnLoop · A Class 9 science project · Notes are made by AI, so check important facts with your textbook.</p>`);
+  wireSetCards(v);
+  $$("[data-topic]", v).forEach(b => b.addEventListener("click", () => { UI.newSrc = "topic"; UI.draft.topic = b.dataset.topic; UI.draft.subject = b.dataset.subj; location.hash = "new"; }));
+}
+
+/* ---------- NEW SET ---------- */
+const SRC = [["text", "Paste notes", "notes"], ["pdf", "PDF", "upload"], ["photo", "Photo", "camera"], ["youtube", "YouTube", "play"], ["lecture", "Record lecture", "mic"], ["topic", "Topic", "quiz"]];
+const newFiles = { pdf: null, photos: [] };
+function viewNew(v) {
+  const s = UI.newSrc, d = UI.draft;
+  const panels = {
+    text: `<label class="lbl" for="srcText">Paste your notes or a chapter</label><textarea id="srcText" style="min-height:220px" placeholder="Paste text from your notes, a website or a textbook...">${esc(d.text || "")}</textarea><div class="row between tiny muted"><span id="wc"></span>${micBtn("srcText")}</div>`,
+    pdf: `<div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a PDF">${icon("upload")}<b>Drop a PDF here or tap to choose</b><span class="muted small">Textbook chapters, class notes or slides saved as PDF. Up to 60 pages.</span><span id="pdfName" class="chip brand" ${newFiles.pdf ? "" : "hidden"}>${esc(newFiles.pdf ? newFiles.pdf.name : "")}</span></div><input type="file" id="pdfIn" accept="application/pdf" hidden>`,
+    photo: `<div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose photos">${icon("camera")}<b>Add photos of your textbook or notebook</b><span class="muted small">Up to 6 pages. Clear, well-lit photos work best.</span></div><input type="file" id="photoIn" accept="image/*" multiple hidden><div class="thumbs" id="thumbs"></div>${S.imagesOk ? "" : `<p class="banner small">Photo reading isn't available here. Use Paste notes or PDF instead.</p>`}`,
+    youtube: `<label class="lbl" for="ytUrl">YouTube link</label><input type="text" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..." value="${esc(d.yt || "")}">
+      <label class="lbl" for="ytText" style="margin-top:12px">Video transcript</label>
+      <p class="muted small" style="margin-bottom:6px">On YouTube, open the video, click <b>…more</b> under it, then <b>Show transcript</b>. Select all the transcript text, copy it and paste it here.</p>
+      <textarea id="ytText" style="min-height:180px" placeholder="Paste the transcript here...">${esc(d.ytText || "")}</textarea>`,
+    lecture: `<div class="stack" style="align-items:center;text-align:center;padding:10px 0">
+        ${S.dict && !S.dictDenied ? `<button type="button" class="recbtn" id="recBtn" aria-label="Start or stop recording">${icon("mic")}</button><b id="recLabel">Tap to start recording</b><span id="recTime" class="muted tiny"></span>
+        <p class="muted small" style="max-width:52ch">Keep your phone or laptop near the teacher. Allow the microphone when asked. Words appear below as they are spoken. Stop any time, then create the set.</p>`
+        : `<p class="banner small">Voice recording works in Google Chrome or Microsoft Edge (computer or Android phone). You can still paste a lecture transcript below.</p>`}
+      </div>
+      <label class="lbl" for="lectureText">Lecture transcript</label><textarea id="lectureText" style="min-height:200px" placeholder="Your recorded lecture will appear here...">${esc(d.lecture || "")}</textarea>`,
+    topic: `<label class="lbl" for="topicIn">What topic do you want to study?</label><input type="text" id="topicIn" placeholder="For example: Newton's laws of motion" value="${esc(d.topic || "")}"><p class="muted small" style="margin-top:6px">LearnLoop will write notes from Class 9 level knowledge of this topic.</p>`
+  };
+  v.innerHTML = `
+    <div class="stack" style="gap:4px"><h1>Create a study set</h1><p class="muted">Pick where your lesson comes from. LearnLoop makes notes, flashcards, a quiz and a practice test from it.</p></div>
+    ${aiBanner()}
+    <div class="card stack" style="gap:16px">
+      <div class="tabs" role="tablist">${SRC.map(([k, l, ic]) => `<button class="tab ${s === k ? "on" : ""}" role="tab" aria-selected="${s === k}" data-src="${k}">${icon(ic)}${l}</button>`).join("")}</div>
+      <div id="panel">${panels[s]}</div>
+      <div class="row" style="align-items:flex-end">
+        <div style="flex:1;min-width:200px"><label class="lbl" for="subjSel">Subject</label><select id="subjSel"><option value="">Let LearnLoop decide</option>${SUBJECTS.map(x => `<option ${d.subject === x ? "selected" : ""}>${x}</option>`).join("")}</select></div>
+        <button class="btn primary" id="makeBtn" ${S.sample ? "" : "disabled"}>Create study set</button>
+      </div>
+      <div id="progressBox"></div>
+    </div>`;
+  $$("[data-src]", v).forEach(b => b.addEventListener("click", () => { keepDraft(); if (Dict.active) S.dict.stop().catch(() => {}); UI.newSrc = b.dataset.src; viewNew(v); }));
+  $("#subjSel").addEventListener("change", e => d.subject = e.target.value);
+  wireMics(v);
+  const t = $("#srcText"); if (t) { const wc = () => $("#wc").textContent = (t.value.trim() ? t.value.trim().split(/\s+/).length : 0) + " words"; t.addEventListener("input", wc); wc(); }
+  if (s === "pdf") wireDrop("#drop", "#pdfIn", files => { const f = files[0]; if (!f) return; if (f.type !== "application/pdf" && !/\.pdf$/i.test(f.name)) return toast("Please choose a PDF file."); newFiles.pdf = f; const n = $("#pdfName"); n.textContent = f.name; n.hidden = false; });
+  if (s === "photo") { wireDrop("#drop", "#photoIn", files => { newFiles.photos = newFiles.photos.concat(files.filter(f => f.type.startsWith("image/"))).slice(0, 6); paintThumbs(); }); paintThumbs(); }
+  if (s === "lecture" && $("#recBtn")) { $("#recBtn").addEventListener("click", () => micStart($("#lectureText"))); paintMics(); }
+  $("#makeBtn").addEventListener("click", createSet);
+}
+function paintThumbs() {
+  const el = $("#thumbs"); if (!el) return;
+  el.innerHTML = newFiles.photos.map((f, i) => `<div class="stack" style="gap:4px;align-items:center"><img alt="Page ${i + 1}" src="${URL.createObjectURL(f)}"><button class="btn ghost sm" data-rm="${i}">Remove</button></div>`).join("");
+  $$("[data-rm]", el).forEach(b => b.addEventListener("click", () => { newFiles.photos.splice(+b.dataset.rm, 1); paintThumbs(); }));
+}
+function wireDrop(dropSel, inSel, onFiles) {
+  const drop = $(dropSel), inp = $(inSel);
+  drop.addEventListener("click", () => inp.click());
+  drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); inp.click(); } });
+  inp.addEventListener("change", () => { onFiles(Array.from(inp.files || [])); inp.value = ""; });
+  drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+  drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+  drop.addEventListener("drop", e => { e.preventDefault(); drop.classList.remove("over"); onFiles(Array.from(e.dataTransfer.files || [])); });
+}
+function keepDraft() {
+  const d = UI.draft, g = id => { const el = document.getElementById(id); return el ? el.value : undefined; };
+  ["text:srcText", "yt:ytUrl", "ytText:ytText", "lecture:lectureText", "topic:topicIn"].forEach(p => { const [k, id] = p.split(":"); const val = g(id); if (val !== undefined) d[k] = val; });
+}
+
+/* PDF + images */
+let pdfLib = null;
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("Couldn't load " + src)); document.head.appendChild(s); }); }
+async function loadPdfJs() {
+  if (!pdfLib) pdfLib = (async () => {
+    const base = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+    await loadScript(base + "pdf.min.js");
+    await loadScript(base + "pdf.worker.min.js");
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
+    return window.pdfjsLib;
+  })().catch(e => { pdfLib = null; throw e; });
+  return pdfLib;
+}
+async function readPdf(file, onPage) {
+  const lib = await loadPdfJs();
+  const pdf = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
+  const n = Math.min(pdf.numPages, 60); let text = "";
+  for (let i = 1; i <= n; i++) {
+    const page = await pdf.getPage(i); const c = await page.getTextContent();
+    text += c.items.map(it => it.str + (it.hasEOL ? "\n" : " ")).join("") + "\n\n";
+    onPage && onPage(i, n);
+  }
+  return { text: text.replace(/[ \t]+/g, " ").trim(), pdf };
+}
+function canvasBlob(canvas) { return new Promise(r => canvas.toBlob(b => r(b), "image/jpeg", 0.82)); }
+async function pdfToImages(pdf, max = 6) {
+  const out = [];
+  for (let i = 1; i <= Math.min(pdf.numPages, max); i++) {
+    const page = await pdf.getPage(i); const vp0 = page.getViewport({ scale: 1 }); const vp = page.getViewport({ scale: Math.min(2, 1400 / vp0.width) });
+    const c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+    out.push(await canvasBlob(c));
+  }
+  return out;
+}
+async function shrinkImage(file, maxSide = 1600) {
+  try {
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+    if (k === 1 && file.size < 1.5e6) return file;
+    const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+    return await canvasBlob(c);
+  } catch (e) { return file; }
+}
+async function readImages(blobs) {
+  const r = await ai(`Copy out ALL the text you can read on these textbook or notebook pages, in reading order. Keep headings. Describe any diagram or table briefly in [square brackets]. Do not add anything else.`, { images: blobs, modelTier: "default" });
+  return r.text;
+}
+
+function stepsUI(list, cur) {
+  return `<div class="steps" aria-live="polite">${list.map((t, i) => `<div class="step ${i < cur ? "done" : i === cur ? "doing" : ""}"><span class="dot">${i < cur ? "✓" : ""}</span>${esc(t)}</div>`).join("")}</div>`;
+}
+let creating = false;
+async function createSet() {
+  if (creating) return;
+  keepDraft();
+  const d = UI.draft, src = UI.newSrc, box = $("#progressBox"), btn = $("#makeBtn");
+  const set = { id: uid(), createdAt: Date.now(), updatedAt: Date.now(), sourceType: src, subject: d.subject || "", subjectFixed: !!d.subject,
+    title: "", sourceText: "", summary: "", notes: [], keyTerms: [], flashcards: [], quiz: [], blanks: [], written: [], quizHistory: [], testHistory: [], chat: [], podcast: null, lastStudied: Date.now() };
+  const steps = ["Reading your material", "Writing notes", "Making flashcards, quiz and test", "Saving your study set"];
+  const show = (i, extra = "") => { box.innerHTML = stepsUI(steps, i) + (extra ? `<p class="muted small" style="margin-top:8px">${esc(extra)}</p>` : ""); };
+  creating = true; btn.disabled = true;
+  try {
+    show(0);
+    if (src === "text") set.sourceText = (d.text || "").trim();
+    else if (src === "youtube") { set.sourceText = (d.ytText || "").trim(); set.sourceUrl = (d.yt || "").trim(); }
+    else if (src === "lecture") { if (Dict.active) await S.dict.stop().catch(() => {}); set.sourceText = ($("#lectureText")?.value || d.lecture || "").trim(); }
+    else if (src === "topic") { set.topic = (d.topic || "").trim(); if (!set.topic) throw { msg: "Type a topic first." }; set.title = set.topic; }
+    else if (src === "pdf") {
+      if (!newFiles.pdf) throw { msg: "Choose a PDF first." };
+      const { text, pdf } = await readPdf(newFiles.pdf, (i, n) => show(0, `Reading page ${i} of ${n}`));
+      set.sourceText = text;
+      if (text.length < 300) {
+        if (!S.imagesOk) throw { msg: "This PDF has no readable text (it may be a scan). Try the Photo option or paste the text." };
+        show(0, "This PDF looks scanned. Reading the pages as pictures…");
+        set.sourceText = await readImages(await pdfToImages(pdf));
+      }
+      set.fileName = newFiles.pdf.name;
+    } else if (src === "photo") {
+      if (!newFiles.photos.length) throw { msg: "Add at least one photo first." };
+      if (!S.imagesOk) throw { msg: "Photo reading isn't available here." };
+      show(0, "Reading your photos…");
+      set.sourceText = await readImages(await Promise.all(newFiles.photos.map(f => shrinkImage(f))));
+    }
+    if (src !== "topic" && set.sourceText.split(/\s+/).length < 40) throw { msg: "There's too little text to study from. Add at least a paragraph or two." };
+    set.sourceText = set.sourceText.slice(0, 60000);
+    show(1);
+    const pNotes = aiJSON(notesPrompt(set));
+    const pPrac = aiJSON(practicePrompt(set, ["flashcards", "quiz", "blanks", "written"]));
+    const notes = await pNotes; show(2);
+    const prac = await pPrac;
+    cleanSet(set, notes, prac);
+    if (!set.flashcards.length && !set.notes.length) throw { code: "bad_json" };
+    show(3);
+    await saveSet(set);
+    newFiles.pdf = null; newFiles.photos = []; UI.draft = {};
+    toast("Study set ready!");
+    location.hash = "set-" + set.id;
+  } catch (e) {
+    box.innerHTML = `<div class="fb bad">${esc(e && e.msg ? e.msg : errMsg(e))}</div>`;
+  } finally { creating = false; if (btn.isConnected) btn.disabled = !S.sample; }
+}
+
+/* ---------- STUDY SET ---------- */
+const SET_TABS = [["notes", "Notes", "notes"], ["cards", "Flashcards", "cards"], ["quiz", "Quiz", "quiz"], ["test", "Practice test", "test"], ["loopy", "Ask Loopy", "chat"], ["listen", "Listen", "head"]];
+function viewSet(v, id) {
+  const set = getSet(id);
+  if (!set) {
+    v.innerHTML = S.setsReady ? `<div class="card empty"><h2>Study set not found</h2><p class="muted">It may have been deleted.</p><a class="btn primary" href="#home">Go home</a></div>` : `<div class="card muted">Loading…</div>`;
+    return;
+  }
+  const tab = UI.tab[id] || "notes";
+  v.innerHTML = `
+    <div class="row between">
+      <a class="btn ghost sm" href="#home">${icon("back")} All sets</a>
+      <div class="row"><button class="btn sm" id="printBtn">${icon("notes")} Print notes</button><button class="btn sm danger" id="delBtn">${icon("trash")} Delete</button></div>
+    </div>
+    <div class="stack" style="gap:8px">
+      <div class="row"><span class="chip brand">${esc(set.subject || "Other")}</span><span class="chip">${esc({ text: "Notes", pdf: "PDF", photo: "Photos", youtube: "YouTube", lecture: "Lecture recording", topic: "Topic", explore: "From Explore" }[set.sourceType] || "Notes")}</span><span class="tiny muted">Made ${fmtDate(set.createdAt)}</span></div>
+      <h1>${esc(set.title)}</h1>
+      <div class="row small muted" style="gap:16px"><span>${(set.flashcards || []).length} flashcards</span><span>${mastery(set)}% mastered</span><span>${(set.quizHistory || []).length} quizzes taken</span></div>
+    </div>
+    ${aiBanner()}
+    <div class="tabs" role="tablist">${SET_TABS.map(([k, l, ic]) => `<button class="tab ${tab === k ? "on" : ""}" role="tab" aria-selected="${tab === k}" data-tab="${k}">${icon(ic)}${l}</button>`).join("")}</div>
+    <div id="tabBody"></div>`;
+  $$("[data-tab]", v).forEach(b => b.addEventListener("click", () => { UI.tab[id] = b.dataset.tab; viewSet(v, id); }));
+  $("#delBtn").addEventListener("click", async () => { if (await confirmBox("Delete this study set?", `"${set.title}" and all its progress will be removed. This can't be undone.`, "Delete", true)) { await deleteSet(set); toast("Study set deleted."); location.hash = "home"; } });
+  $("#printBtn").addEventListener("click", () => { UI.tab[id] = "notes"; viewSet(v, id); setTimeout(() => { try { window.print(); } catch (e) {} }, 150); });
+  const body = $("#tabBody");
+  ({ notes: tabNotes, cards: tabCards, quiz: tabQuiz, test: tabTest, loopy: tabLoopy, listen: tabListen }[tab])(body, set);
+}
+
+/* Notes */
+function tabNotes(el, set) {
+  el.innerHTML = `
+    <div class="card stack">
+      <div class="row between"><h2>Summary</h2>${S.tts && !S.ttsOff ? `<button class="btn sm" data-speak="sum:${esc(set.id)}" data-label="Listen">${icon("speaker")} Listen</button>` : ""}</div>
+      <p style="max-width:68ch">${esc(set.summary)}</p>
+    </div>
+    ${(set.notes || []).map(n => `<div class="card prose"><h3>${esc(n.heading)}</h3><ul>${n.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>`).join("")}
+    ${(set.keyTerms || []).length ? `<div class="card stack"><h2>Key terms</h2><div class="terms">${set.keyTerms.map(k => `<div class="term"><b>${esc(k.term)}</b><span class="small">${esc(k.meaning)}</span></div>`).join("")}</div></div>` : ""}
+    ${set.sourceText ? `<div class="card"><details><summary>Show original material${set.fileName ? " (" + esc(set.fileName) + ")" : ""}</summary><div class="src">${esc(set.sourceText)}</div></details>${set.sourceUrl ? `<p class="small" style="margin-top:8px">Video: <a href="${esc(set.sourceUrl)}" target="_blank" rel="noopener">${esc(set.sourceUrl)}</a></p>` : ""}</div>` : ""}`;
+  const sb = $("[data-speak]", el);
+  if (sb) sb.addEventListener("click", () => { if (Speak.owner === sb.dataset.speak && Speak.state !== "idle") { S.tts.stop(); return; } speakText(set.summary, sb.dataset.speak); });
+  paintSpeak();
+}
+
+/* Flashcards */
+function buildQueue(set, all) {
+  const cards = set.flashcards || [];
+  let pool = all ? cards : cards.filter(c => (c.m || 0) < 3);
+  if (!pool.length) pool = cards;
+  return shuffle(pool).sort((a, b) => (a.m || 0) - (b.m || 0)).map(c => c.id);
+}
+function tabCards(el, set) {
+  const st = UI.fc[set.id] || (UI.fc[set.id] = { mode: "study", queue: null, i: 0, flipped: false, got: 0, again: 0 });
+  const n = levelCounts(set);
+  el.innerHTML = `
+    <div class="row between">
+      <div class="tabs" style="border:none;padding:0">${[["study", "Study"], ["match", "Match game"], ["edit", "Edit cards"]].map(([k, l]) => `<button class="tab ${st.mode === k ? "on" : ""}" data-mode="${k}">${l}</button>`).join("")}</div>
+      <div class="row small">${LEVELS.map((L, i) => `<span class="row" style="gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:${L.c};display:inline-block"></span>${L.n} <b>${n[i]}</b></span>`).join("")}</div>
+    </div>
+    ${masteryBar(set)}
+    <div id="fcBody"></div>`;
+  $$("[data-mode]", el).forEach(b => b.addEventListener("click", () => { st.mode = b.dataset.mode; tabCards(el, set); }));
+  const body = $("#fcBody", el);
+  if (!(set.flashcards || []).length && st.mode !== "edit") { body.innerHTML = `<div class="card empty"><p class="muted">No flashcards in this set yet.</p><button class="btn" id="toEdit">Add cards</button></div>`; $("#toEdit").addEventListener("click", () => { st.mode = "edit"; tabCards(el, set); }); return; }
+  if (st.mode === "study") studyCards(body, set, st, el);
+  else if (st.mode === "match") matchGame(body, set);
+  else editCards(body, set, el);
+}
+function studyCards(body, set, st, outer) {
+  if (!st.queue) { st.queue = buildQueue(set); st.i = 0; st.got = 0; st.again = 0; st.flipped = false; }
+  if (st.i >= st.queue.length) {
+    body.innerHTML = `<div class="card empty"><span class="score-ring">${st.got}/${st.queue.length}</span><h2>Round complete</h2><p class="muted">You knew ${st.got} cards and are still learning ${st.again}. ${mastery(set) === 100 ? "Everything is mastered. Come back in a few days to keep it fresh." : "Another round on the tricky ones will move them up."}</p>
+      <div class="row" style="justify-content:center"><button class="btn primary" id="again">Study the tricky ones</button><button class="btn" id="all">Study all cards</button><button class="btn ghost" id="reset">Reset progress</button></div></div>`;
+    $("#again").addEventListener("click", () => { st.queue = null; tabCards(outer, set); });
+    $("#all").addEventListener("click", () => { st.queue = buildQueue(set, true); st.i = 0; st.got = 0; st.again = 0; tabCards(outer, set); });
+    $("#reset").addEventListener("click", async () => { if (await confirmBox("Reset progress?", "All cards in this set go back to New.", "Reset")) { set.flashcards.forEach(c => c.m = 0); saveSet(set); st.queue = null; tabCards(outer, set); } });
+    return;
+  }
+  const card = set.flashcards.find(c => c.id === st.queue[st.i]);
+  if (!card) { st.i++; return studyCards(body, set, st, outer); }
+  body.innerHTML = `
+    <div class="row between small muted"><span>Card ${st.i + 1} of ${st.queue.length}</span><span class="chip" style="background:transparent;border:1px solid var(--line)">${LEVELS[card.m || 0].n}</span></div>
+    <div class="flash-wrap"><div class="flash ${st.flipped ? "flipped" : ""}" id="flash" tabindex="0" role="button" aria-label="Flip card">
+      <div class="face front"><span class="lab chip">Question</span><div class="big">${esc(card.q)}</div><span class="muted tiny">Tap or press <span class="kbd">Space</span> to see the answer</span></div>
+      <div class="face back"><span class="lab chip brand">Answer</span><div class="big">${esc(card.a)}</div></div>
+    </div></div>
+    <div class="row" style="justify-content:center" id="rateRow" ${st.flipped ? "" : "hidden"}>
+      <button class="btn" id="learning" style="border-color:var(--bad)">Still learning <span class="kbd">1</span></button>
+      <button class="btn primary" id="gotit">Got it <span class="kbd">2</span></button>
+    </div>`;
+  const flip = () => { st.flipped = !st.flipped; $("#flash").classList.toggle("flipped", st.flipped); $("#rateRow").hidden = !st.flipped; };
+  const rate = ok => {
+    card.m = ok ? Math.min(3, (card.m || 0) + 1) : 1; card.seen = Date.now();
+    ok ? st.got++ : st.again++;
+    set.lastStudied = Date.now(); saveSetSoon(set);
+    st.i++; st.flipped = false; tabCards(outer, set);
+  };
+  $("#flash").addEventListener("click", flip);
+  $("#learning").addEventListener("click", () => rate(false));
+  $("#gotit").addEventListener("click", () => rate(true));
+  UI.keyHandler = e => { if (e.key === " ") { e.preventDefault(); flip(); } else if (st.flipped && e.key === "1") rate(false); else if (st.flipped && e.key === "2") rate(true); };
+}
+function matchGame(body, set) {
+  const pick = shuffle(set.flashcards).slice(0, 6);
+  const cut = s => s.length > 110 ? s.slice(0, 107) + "…" : s;
+  const tiles = shuffle([...pick.map(c => ({ k: c.id, t: cut(c.q), a: false })), ...pick.map(c => ({ k: c.id, t: cut(c.a), a: true }))]);
+  let sel = null, left = pick.length, t0 = 0, timer = null;
+  body.innerHTML = `<div class="row between"><p class="muted small">Tap a question, then its matching answer. Clear the board as fast as you can.</p><b id="mTime" style="font-variant-numeric:tabular-nums">0.0s</b></div>
+    <div class="match">${tiles.map((x, i) => `<button class="mt ${x.a ? "a" : ""}" data-i="${i}">${esc(x.t)}</button>`).join("")}</div>
+    <div class="row"><button class="btn" id="newMatch">New board</button>${set.bestMatch ? `<span class="muted small">Your best: ${set.bestMatch.toFixed(1)}s</span>` : ""}</div>`;
+  $("#newMatch").addEventListener("click", () => { clearInterval(timer); matchGame(body, set); });
+  $$(".mt", body).forEach(b => b.addEventListener("click", () => {
+    if (!t0) { t0 = Date.now(); timer = setInterval(() => { const t = $("#mTime"); if (!t) return clearInterval(timer); t.textContent = ((Date.now() - t0) / 1000).toFixed(1) + "s"; }, 100); }
+    const i = +b.dataset.i;
+    if (sel === null) { sel = i; b.classList.add("sel"); return; }
+    if (sel === i) { b.classList.remove("sel"); sel = null; return; }
+    const A = tiles[sel], B = tiles[i], prev = $(`.mt[data-i="${sel}"]`, body);
+    if (A.k === B.k && A.a !== B.a) {
+      prev.classList.add("gone"); b.classList.add("gone"); left--;
+      if (!left) {
+        clearInterval(timer); const secs = (Date.now() - t0) / 1000;
+        const best = !set.bestMatch || secs < set.bestMatch; if (best) set.bestMatch = secs;
+        set.lastStudied = Date.now(); saveSet(set);
+        body.querySelector(".match").outerHTML = `<div class="card empty"><span class="score-ring">${secs.toFixed(1)}s</span><h2>${best ? "New best time!" : "Board cleared"}</h2></div>`;
+      }
+    } else { prev.classList.add("wrong"); b.classList.add("wrong"); setTimeout(() => { prev.classList.remove("wrong", "sel"); b.classList.remove("wrong"); }, 450); }
+    prev.classList.remove("sel"); sel = null;
+  }));
+}
+function editCards(body, set, outer) {
+  const draft = clone(set.flashcards || []);
+  const paint = () => {
+    body.innerHTML = `<div class="stack">${draft.map((c, i) => `<div class="card row" style="align-items:flex-start;padding:12px">
+      <div style="flex:1;min-width:200px"><label class="lbl tiny" for="q${i}">Question</label><textarea id="q${i}" style="min-height:64px">${esc(c.q)}</textarea></div>
+      <div style="flex:1;min-width:200px"><label class="lbl tiny" for="a${i}">Answer</label><textarea id="a${i}" style="min-height:64px">${esc(c.a)}</textarea></div>
+      <button class="btn ghost sm danger" data-del="${i}" aria-label="Delete card ${i + 1}">${icon("trash")}</button></div>`).join("")}</div>
+      <div class="row"><button class="btn" id="addC">${icon("plus")} Add card</button><button class="btn primary" id="saveC">Save changes</button>${S.sample ? `<button class="btn" id="moreC">Make 10 more with AI</button>` : ""}</div>`;
+    const pull = () => draft.forEach((c, i) => { c.q = $("#q" + i).value; c.a = $("#a" + i).value; });
+    $$("[data-del]", body).forEach(b => b.addEventListener("click", () => { pull(); draft.splice(+b.dataset.del, 1); paint(); }));
+    $("#addC").addEventListener("click", () => { pull(); draft.push({ id: uid(), q: "", a: "", m: 0 }); paint(); $("#q" + (draft.length - 1)).focus(); });
+    $("#saveC").addEventListener("click", () => { pull(); set.flashcards = draft.filter(c => c.q.trim() && c.a.trim()); UI.fc[set.id].queue = null; saveSet(set); toast("Cards saved."); UI.fc[set.id].mode = "study"; tabCards(outer, set); });
+    const mb = $("#moreC");
+    if (mb) mb.addEventListener("click", async () => {
+      pull(); mb.disabled = true; mb.textContent = "Making cards…";
+      try {
+        const r = await aiJSON(practicePrompt(set, ["flashcards"], draft.map(c => "- " + c.q).join("\n")).replace("16 to 20 flashcards", "10 new flashcards"));
+        (r.flashcards || []).filter(c => c.q && c.a).forEach(c => draft.push({ id: uid(), q: String(c.q), a: String(c.a), m: 0 }));
+        paint(); toast("Added new cards. Press Save to keep them.");
+      } catch (e) { toast(errMsg(e)); mb.disabled = false; mb.textContent = "Make 10 more with AI"; }
+    });
+  };
+  paint();
+}
+
+/* Quiz */
+function tabQuiz(el, set) {
+  let st = UI.qz[set.id];
+  if (!st) st = UI.qz[set.id] = { items: shuffle([...(set.quiz || []).map(q => ({ ...q, kind: "mcq" })), ...(set.blanks || []).map(b => ({ ...b, kind: "blank" }))]), i: 0, score: 0, answered: null, wrong: [], saved: false };
+  if (!st.items.length) { el.innerHTML = `<div class="card empty"><p class="muted">No quiz questions yet.</p>${S.sample ? `<button class="btn primary" id="mk">Make a quiz</button>` : ""}</div>`; const mk = $("#mk"); if (mk) mk.addEventListener("click", () => newQuestions(el, set, mk)); return; }
+  if (st.i >= st.items.length) return quizEnd(el, set, st);
+  const q = st.items[st.i];
+  const head = `<div class="row between small muted"><span>Question ${st.i + 1} of ${st.items.length}</span><span>Score ${st.score}</span></div><div class="bar"><span style="width:${st.i / st.items.length * 100}%;background:var(--brand)"></span></div>`;
+  if (q.kind === "mcq") {
+    const done = st.answered !== null;
+    el.innerHTML = `${head}<div class="card stack" style="gap:14px"><span class="chip" style="align-self:flex-start">Multiple choice</span><h2 style="font-size:20px">${esc(q.q)}</h2>
+      <div class="stack">${q.options.map((o, i) => `<button class="opt ${done && i === q.answer ? "right" : ""} ${done && i === st.answered && i !== q.answer ? "wrongpick" : ""}" data-o="${i}" ${done ? "disabled" : ""}><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
+      ${done ? `<div class="fb ${st.answered === q.answer ? "good" : "bad"}"><b>${st.answered === q.answer ? "Correct!" : "Not quite."}</b> ${esc(q.explanation)}</div><div class="row" style="justify-content:flex-end"><button class="btn primary" id="next">Next</button></div>` : ""}</div>`;
+    if (!done) {
+      const pickO = i => { st.answered = i; if (i === q.answer) st.score++; else st.wrong.push({ q: q.q, right: q.options[q.answer], why: q.explanation }); tabQuiz(el, set); };
+      $$("[data-o]", el).forEach(b => b.addEventListener("click", () => pickO(+b.dataset.o)));
+      UI.keyHandler = e => { const k = "abcd1234".indexOf(e.key.toLowerCase()); if (k >= 0 && (k % 4) < q.options.length) pickO(k % 4); };
+    }
+  } else {
+    const done = st.answered !== null, ok = done && st.answered.ok;
+    el.innerHTML = `${head}<div class="card stack" style="gap:14px"><span class="chip" style="align-self:flex-start">Fill in the blank</span><h2 style="font-size:20px">${esc(q.sentence)}</h2>
+      <div class="row"><input type="text" id="blankIn" style="flex:1;min-width:200px" placeholder="Type the missing word" value="${done ? esc(st.answered.text) : ""}" ${done ? "disabled" : ""} autocomplete="off"><button class="btn primary" id="check" ${done ? "hidden" : ""}>Check</button></div>
+      ${!done && q.hint ? `<details><summary class="small">Need a hint?</summary><p class="small muted" style="margin-top:6px">${esc(q.hint)}</p></details>` : ""}
+      ${done ? `<div class="fb ${ok ? "good" : "bad"}"><b>${ok ? "Correct!" : "The answer is: " + esc(q.answer)}</b></div><div class="row" style="justify-content:flex-end"><button class="btn primary" id="next">Next</button></div>` : ""}</div>`;
+    if (!done) {
+      const inp = $("#blankIn"); inp.focus();
+      const check = () => { const t = inp.value.trim(); if (!t) return; const good = answerMatches(t, q.answer); st.answered = { text: t, ok: good }; if (good) st.score++; else st.wrong.push({ q: q.sentence, right: q.answer, why: q.hint }); tabQuiz(el, set); };
+      $("#check").addEventListener("click", check);
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+    }
+  }
+  const nx = $("#next", el);
+  if (nx) { nx.focus(); nx.addEventListener("click", () => { st.i++; st.answered = null; tabQuiz(el, set); }); UI.keyHandler = e => { if (e.key === "Enter") { st.i++; st.answered = null; tabQuiz(el, set); } }; }
+}
+function quizEnd(el, set, st) {
+  const total = st.items.length, pct = Math.round(st.score / total * 100);
+  if (!st.saved) { st.saved = true; (set.quizHistory = set.quizHistory || []).push({ at: Date.now(), score: st.score, total }); set.quizHistory = set.quizHistory.slice(-50); set.lastStudied = Date.now(); saveSet(set); }
+  el.innerHTML = `<div class="card empty"><span class="score-ring">${st.score}/${total}</span><h2>${pct >= 80 ? "Brilliant work!" : pct >= 50 ? "Good effort!" : "Keep looping!"}</h2><p class="muted">You scored ${pct}%. ${st.wrong.length ? "Look at the ones you missed below, then try again." : "You got everything right."}</p>
+    <div class="row" style="justify-content:center"><button class="btn primary" id="retry">Try again</button>${S.sample ? `<button class="btn" id="newq">Make new questions</button>` : ""}</div></div>
+    ${st.wrong.length ? `<div class="card stack"><h3>Questions to review</h3>${st.wrong.map(w => `<div class="stack" style="gap:2px;padding:10px 0;border-top:1px solid var(--line)"><b>${esc(w.q)}</b><span class="small">Answer: <b>${esc(w.right)}</b></span>${w.why ? `<span class="small muted">${esc(w.why)}</span>` : ""}</div>`).join("")}</div>` : ""}`;
+  $("#retry").addEventListener("click", () => { delete UI.qz[set.id]; tabQuiz(el, set); });
+  const nq = $("#newq"); if (nq) nq.addEventListener("click", () => newQuestions(el, set, nq));
+}
+async function newQuestions(el, set, btn) {
+  btn.disabled = true; btn.textContent = "Making new questions…";
+  try {
+    const avoid = [...(set.quiz || []).map(q => "- " + q.q), ...(set.blanks || []).map(b => "- " + b.sentence)].join("\n");
+    const r = await aiJSON(practicePrompt(set, ["quiz", "blanks"], avoid));
+    cleanSet(set, null, { quiz: r.quiz || [], blanks: r.blanks || [] });
+    await saveSet(set); delete UI.qz[set.id]; tabQuiz(el, set);
+  } catch (e) { toast(errMsg(e)); btn.disabled = false; btn.textContent = "Make new questions"; }
+}
+
+/* Practice test */
+function tabTest(el, set) {
+  const st = UI.ts[set.id] || (UI.ts[set.id] = { answers: [], result: null, busy: false });
+  const W = set.written || [];
+  if (!W.length) { el.innerHTML = `<div class="card empty"><p class="muted">No test questions yet.</p>${S.sample ? `<button class="btn primary" id="mkT">Make a practice test</button>` : ""}</div>`; const b = $("#mkT"); if (b) b.addEventListener("click", () => newTest(el, set, b)); return; }
+  const total = W.reduce((a, w) => a + w.marks, 0), R = st.result;
+  el.innerHTML = `
+    <div class="card row between"><div class="stack" style="gap:2px"><b>Practice test · ${total} marks</b><span class="muted small">Write your answers like in an exam. LearnLoop checks them and shows a model answer.</span></div>
+    ${R ? `<span class="score-ring" style="font-size:34px">${R.got}/${total}</span>` : ""}</div>
+    ${W.map((w, i) => { const r = R && R.results[i]; return `<div class="card stack">
+      <div class="row between"><b>Q${i + 1}. ${esc(w.q)}</b><span class="chip">${w.marks} marks</span></div>
+      <textarea id="ans${i}" placeholder="Write your answer..." ${R ? "disabled" : ""}>${esc(st.answers[i] || "")}</textarea>
+      ${R ? "" : `<div class="row" style="justify-content:flex-end">${micBtn("ans" + i)}</div>`}
+      ${r ? `<div class="fb ${r.score >= w.marks * 0.7 ? "good" : "bad"}"><b>${r.score}/${w.marks}.</b> ${esc(r.feedback)}${r.missing && r.missing.length ? `<ul style="margin:6px 0 0;padding-left:20px">${r.missing.map(m => `<li class="small">Missed: ${esc(m)}</li>`).join("")}</ul>` : ""}</div>
+        <details><summary class="small">Model answer</summary><p class="small" style="margin-top:6px;max-width:68ch">${esc(w.modelAnswer)}</p></details>` : ""}
+    </div>`; }).join("")}
+    ${R && R.overall ? `<div class="card"><b>Teacher's note:</b> ${esc(R.overall)}</div>` : ""}
+    <div class="row" style="justify-content:flex-end">
+      ${R ? `<button class="btn" id="retake">Try this test again</button>${S.sample ? `<button class="btn primary" id="newT">New test</button>` : ""}` : `<button class="btn primary" id="submitT" ${S.sample ? "" : "disabled"}>${st.busy ? "Checking your answers…" : "Submit for checking"}</button>`}
+    </div>`;
+  W.forEach((w, i) => { const t = $("#ans" + i); if (t && !R) t.addEventListener("input", () => st.answers[i] = t.value); });
+  wireMics(el);
+  const sub = $("#submitT");
+  if (sub) sub.addEventListener("click", async () => {
+    W.forEach((w, i) => st.answers[i] = $("#ans" + i).value);
+    if (!st.answers.some(a => a && a.trim())) return toast("Write at least one answer first.");
+    st.busy = true; sub.disabled = true; sub.textContent = "Checking your answers…";
+    try {
+      const qs = W.map((w, i) => `Q${i + 1} (${w.marks} marks): ${w.q}\nModel answer: ${w.modelAnswer}\nKey points: ${w.keyPoints.join("; ")}\nStudent answer: ${(st.answers[i] || "").trim() || "[blank]"}`).join("\n\n");
+      const r = await aiJSON(`You are a fair, kind Class 9 teacher checking written answers. Give marks (whole or half numbers, never more than the question's marks). A blank answer gets 0. Judge meaning, not exact wording. Be specific and encouraging.
+Return JSON: {"results":[{"score": number, "feedback": "1-2 sentences", "missing": ["key point the student missed"]}], "overall": "one encouraging sentence"} with one result per question, in order.
+
+${qs}
+
+Reference material:
+${set.sourceType === "topic" ? "(topic only: use Class 9 knowledge)" : clip(set.sourceText, 12000)}`);
+      const results = W.map((w, i) => { const x = (r.results || [])[i] || {}; return { score: Math.max(0, Math.min(w.marks, Number(x.score) || 0)), feedback: String(x.feedback || ""), missing: (x.missing || []).map(String) }; });
+      const got = results.reduce((a, x) => a + x.score, 0);
+      st.result = { results, got, overall: String(r.overall || "") };
+      (set.testHistory = set.testHistory || []).push({ at: Date.now(), score: got, total }); set.testHistory = set.testHistory.slice(-50);
+      set.lastStudied = Date.now(); saveSet(set);
+    } catch (e) { toast(errMsg(e)); }
+    st.busy = false; tabTest(el, set);
+  });
+  const rt = $("#retake"); if (rt) rt.addEventListener("click", () => { UI.ts[set.id] = { answers: [], result: null, busy: false }; tabTest(el, set); });
+  const nt = $("#newT"); if (nt) nt.addEventListener("click", () => newTest(el, set, nt));
+}
+async function newTest(el, set, btn) {
+  btn.disabled = true; btn.textContent = "Making a new test…";
+  try {
+    const r = await aiJSON(practicePrompt(set, ["written"], (set.written || []).map(w => "- " + w.q).join("\n")));
+    cleanSet(set, null, { written: r.written || [] }); await saveSet(set);
+    UI.ts[set.id] = { answers: [], result: null, busy: false }; tabTest(el, set);
+  } catch (e) { toast(errMsg(e)); btn.disabled = false; btn.textContent = "New test"; }
+}
+
+/* Ask Loopy */
+function tabLoopy(el, set) {
+  set.chat = set.chat || [];
+  const starters = ["Explain this chapter simply", "What are the most important points for my exam?", "Give me 3 tricky questions to test me", "Explain the hardest idea with an example"];
+  el.innerHTML = `<div class="card stack">
+    <div class="row" style="gap:10px"><svg width="38" height="38" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="17" fill="var(--accent)"/><circle cx="12.5" cy="15" r="2.2" fill="#2A1B00"/><circle cx="21.5" cy="15" r="2.2" fill="#2A1B00"/><path d="M12 21c3 2.6 7 2.6 10 0" stroke="#2A1B00" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+    <div><b>Ask Loopy</b><div class="muted small">Your study buddy. Loopy answers from this set's material.</div></div>${set.chat.length ? `<button class="btn ghost sm" id="clearChat" style="margin-left:auto">Clear chat</button>` : ""}</div>
+    <div class="chat" id="chat" aria-live="polite">${set.chat.length ? set.chat.map(m => `<div class="msg ${m.role === "user" ? "me" : "bot"}">${m.role === "user" ? esc(m.content) : `<div class="prose">${md(m.content)}</div>`}</div>`).join("") : `<div class="muted small" style="margin:auto;text-align:center">Ask anything about <b>${esc(set.title)}</b>.</div>`}</div>
+    ${set.chat.length ? "" : `<div class="row">${starters.map(s => `<button class="btn sm" data-ask="${esc(s)}">${esc(s)}</button>`).join("")}</div>`}
+    <div class="composer"><textarea id="ask" placeholder="Type your doubt..." aria-label="Your question"></textarea>${micBtn("ask")}<button class="btn primary" id="send" ${S.sample ? "" : "disabled"}>Send</button></div>
+  </div>`;
+  const chat = $("#chat"); chat.scrollTop = chat.scrollHeight;
+  wireMics(el);
+  const send = async text => {
+    text = (text || "").trim(); if (!text || UI.chatBusy[set.id]) return;
+    if (!S.sample) return toast(errMsg({ code: "no_ai" }));
+    UI.chatBusy[set.id] = true;
+    set.chat.push({ role: "user", content: text });
+    tabLoopy(el, set);
+    const box = document.createElement("div"); box.className = "msg bot"; box.innerHTML = `<span class="muted">Thinking…</span>`; $("#chat").appendChild(box); $("#chat").scrollTop = 1e9;
+    const pre = `You are Loopy, a friendly study buddy. ${STUDENT}
+Answer using the study material below. If something isn't in the material, say "This isn't in your notes, but..." and give a short correct answer.
+Keep replies short (under 180 words), use bullet points and one simple example when it helps. If the student asks you to test them, ask questions one by one and wait for their answer.
+Study set: ${set.title}
+${materialBlock(set)}
+Notes summary: ${set.summary}
+
+Student: `;
+    const h = set.chat.slice(-16); while (h.length && h[0].role !== "user") h.shift();
+    const hist = h.map((m, i) => ({ role: m.role, content: i === 0 ? pre + m.content : m.content }));
+    try {
+      const r = await ai(hist, { cache: false, onText: ({ text }) => { box.innerHTML = `<div class="prose">${md(text)}</div>`; const c = $("#chat"); if (c) c.scrollTop = 1e9; } });
+      set.chat.push({ role: "assistant", content: r.text });
+      set.chat = set.chat.slice(-30); set.lastStudied = Date.now(); saveSet(set);
+    } catch (e) { set.chat.pop(); toast(errMsg(e)); }
+    UI.chatBusy[set.id] = false;
+    const tb = $("#tabBody"); if (tb && (UI.tab[set.id] || "notes") === "loopy" && route() === "set-" + set.id) tabLoopy(tb, set);
+  };
+  $("#send").addEventListener("click", () => send($("#ask").value));
+  $("#ask").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send($("#ask").value); } });
+  $$("[data-ask]", el).forEach(b => b.addEventListener("click", () => send(b.dataset.ask)));
+  const cc = $("#clearChat"); if (cc) cc.addEventListener("click", () => { set.chat = []; saveSet(set); tabLoopy(el, set); });
+}
+
+/* Listen (podcast) */
+const VOICE = { Asha: "airy", Ravi: "rounded" };
+function tabListen(el, set) {
+  const p = set.podcast, busy = UI.pod[set.id];
+  if (!p) {
+    el.innerHTML = `<div class="card empty">${icon("head")}<h2>Turn this set into a podcast</h2><p class="muted" style="max-width:54ch">Two hosts, Asha and Ravi, talk through the chapter like friends. Listen on the bus, at the gym, or while you rest your eyes.</p>
+      <div class="row" style="justify-content:center"><button class="btn primary" data-len="short" ${S.sample && !busy ? "" : "disabled"}>${busy ? "Writing your podcast…" : "Make a 3-minute podcast"}</button><button class="btn" data-len="long" ${S.sample && !busy ? "" : "disabled"}>Make a 6-minute podcast</button></div></div>`;
+    $$("[data-len]", el).forEach(b => b.addEventListener("click", () => makePodcast(el, set, b.dataset.len)));
+    return;
+  }
+  const owner = "pod:" + set.id;
+  el.innerHTML = `<div class="card stack">
+    <div class="row between"><div><span class="chip accent">Podcast</span><h2 style="margin-top:6px">${esc(p.title || set.title)}</h2><p class="muted small">With Asha and Ravi · ${p.lines.length} parts</p></div></div>
+    ${S.tts && !S.ttsOff ? `<div class="row"><button class="btn primary" id="podPlay">${icon("play")} Play podcast</button><button class="btn" id="podStop">${icon("stop")} Stop</button>
+      <label class="small row" style="gap:6px" for="rate">Speed <select id="rate" style="width:auto">${[0.8, 1, 1.2, 1.5].map(r => `<option value="${r}" ${(UI.podRate || 1) == r ? "selected" : ""}>${r}x</option>`).join("")}</select></label></div>`
+      : `<p class="banner small">Audio playback isn't available in this browser. You can read the script below.</p>`}
+    <div class="stack" style="gap:4px">${p.lines.map((l, i) => `<div class="line" data-lid="${owner}:${i}"><b style="color:${l.speaker === "Asha" ? "var(--brand)" : "var(--accent)"}">${esc(l.speaker)}</b><span>${esc(l.text)}</span></div>`).join("")}</div>
+    <div class="row"><button class="btn ghost sm" id="redo" ${S.sample ? "" : "disabled"}>Make a new podcast</button></div>
+  </div>`;
+  const pb = $("#podPlay");
+  if (pb) {
+    pb.addEventListener("click", () => {
+      const mine = Speak.owner === owner;
+      if (mine && Speak.state === "speaking") { S.tts.pause(); return; }
+      if (mine && Speak.state === "paused") { S.tts.resume(); return; }
+      Speak.owner = owner;
+      S.tts.speak(p.lines.map((l, i) => ({ text: l.text.slice(0, 1900), voice: VOICE[l.speaker] || "buttery", id: owner + ":" + i, language: "en", rate: UI.podRate || 1 }))).catch(speakErr);
+      set.lastStudied = Date.now(); saveSetSoon(set);
+      paintSpeak();
+    });
+    $("#podStop").addEventListener("click", () => S.tts.stop());
+    $("#rate").addEventListener("change", e => { UI.podRate = +e.target.value; if (Speak.owner === owner && Speak.state !== "idle") S.tts.setRate(UI.podRate); });
+  }
+  $("#redo").addEventListener("click", async () => { if (await confirmBox("Make a new podcast?", "The current script will be replaced.", "Make new")) { if (Speak.owner === owner) S.tts.stop(); set.podcast = null; tabListen(el, set); } });
+  paintSpeak();
+}
+async function makePodcast(el, set, len) {
+  UI.pod[set.id] = true; tabListen(el, set);
+  try {
+    const n = len === "long" ? 34 : 18;
+    const r = await aiJSON(`Write a short, friendly study podcast script for a student. ${STUDENT}
+Two hosts: Asha (a curious student who asks good questions) and Ravi (explains simply, with everyday Indian examples). Use ONLY facts from the material.
+About ${n} lines in total. Each line is 1 to 3 sentences and under 300 characters. Start with a quick welcome that names the topic. Cover every main idea. End with Ravi giving a 3-point recap and Asha saying goodbye. No sound effects, music cues or stage directions.
+Return JSON: {"title": "episode title", "lines": [{"speaker": "Asha", "text": "..."}, {"speaker": "Ravi", "text": "..."}]}
+${materialBlock(set)}
+Notes summary: ${set.summary}`);
+    const lines = (r.lines || []).filter(l => l && l.text).map(l => ({ speaker: l.speaker === "Asha" ? "Asha" : "Ravi", text: String(l.text) }));
+    if (!lines.length) throw { code: "bad_json" };
+    set.podcast = { title: String(r.title || set.title), lines, at: Date.now() };
+    await saveSet(set);
+  } catch (e) { toast(errMsg(e)); }
+  UI.pod[set.id] = false;
+  const tb = $("#tabBody"); if (tb && route() === "set-" + set.id && UI.tab[set.id] === "listen") tabListen(tb, set);
+}
+
+/* Share to Explore */
+async function shareSet(set) {
+  if (!S.db) return toast("Sharing needs LearnLoop to be open in Claude while signed in.");
+  const ok = await confirmBox("Share to Explore?", "Your notes, flashcards and questions will be visible to everyone who uses this LearnLoop. Your progress and chat stay private.", "Share");
+  if (!ok) return;
+  const body = { id: set.id, title: set.title, subject: set.subject || "Other", summary: set.summary, notes: set.notes, keyTerms: set.keyTerms,
+    flashcards: (set.flashcards || []).map(c => ({ q: c.q, a: c.a })), quiz: set.quiz, blanks: set.blanks, written: set.written,
+    sourceType: set.sourceType, topic: set.topic || "", sourceText: clip(set.sourceText, 20000), sharedAt: Date.now(), ownerId: S.uid || "" };
+  try { await S.db.collection("library").doc(set.id).set(body); toast("Shared to Explore."); }
+  catch (e) { toast(e && e.code === "invalid_argument" ? "Your access level can't share to Explore." : "Couldn't share. Try again."); }
+}
+
+/* ---------- EXPLORE ---------- */
+function viewExplore(v) {
+  const subj = UI.exploreSubject, q = UI.exploreQ.toLowerCase();
+  const all = S.library;
+  const list = all.filter(s => (subj === "All" || s.subject === subj) && (!q || (s.title + " " + s.summary).toLowerCase().includes(q)));
+  const counts = SUBJECTS.map(x => [x, all.filter(s => s.subject === x).length]).filter(x => x[1]);
+  v.innerHTML = `
+    <div class="stack" style="gap:4px"><h1>Explore</h1><p class="muted">Ready-made study sets for Class 9. Save any set to make it yours and track your own progress.</p></div>
+    <div class="row"><input type="search" id="exQ" placeholder="Search study sets" value="${esc(UI.exploreQ)}" style="flex:1;min-width:220px" aria-label="Search study sets"></div>
+    <div class="row">${[["All", all.length], ...counts].map(([x, n]) => `<button class="tab ${subj === x ? "on" : ""}" data-subj="${esc(x)}">${esc(x)} <span class="tiny">${n}</span></button>`).join("")}</div>
+    ${!S.libReady ? `<div class="card muted">Loading shared sets…</div>` :
+      list.length ? `<div class="grid g2">${list.map(s => `<div class="card setcard" tabindex="0" role="button" data-lib="${esc(s.id)}"><span class="chip brand" style="align-self:flex-start">${esc(s.subject)}</span><h3>${esc(s.title)}</h3><p class="small muted">${esc((s.summary || "").slice(0, 140))}${(s.summary || "").length > 140 ? "…" : ""}</p><span class="tiny muted">${(s.flashcards || []).length} cards · ${(s.quiz || []).length} quiz questions · shared ${fmtDate(s.sharedAt)}</span></div>`).join("")}</div>`
+      : `<div class="card empty"><h2>${all.length ? "No sets match" : "Nothing shared yet"}</h2><p class="muted">${all.length ? "Try another subject or search word." : "New sets will appear here soon."}</p></div>`}`;
+  const inp = $("#exQ"); inp.addEventListener("input", () => { UI.exploreQ = inp.value; const pos = inp.selectionStart; viewExplore(v); const n = $("#exQ"); n.focus(); n.setSelectionRange(pos, pos); });
+  $$("[data-subj]", v).forEach(b => b.addEventListener("click", () => { UI.exploreSubject = b.dataset.subj; viewExplore(v); }));
+  $$("[data-lib]", v).forEach(el => { const open = () => previewLib(S.library.find(s => s.id === el.dataset.lib)); el.addEventListener("click", open); el.addEventListener("keydown", e => { if (e.key === "Enter") open(); }); });
+}
+function previewLib(s) {
+  if (!s) return;
+  const mine = S.uid && s.ownerId === S.uid, admin = S.isAdmin;
+  modal(`<div class="row between"><span class="chip brand">${esc(s.subject)}</span><button class="btn ghost sm" data-close>Close</button></div>
+    <h2>${esc(s.title)}</h2><p>${esc(s.summary)}</p>
+    <div class="stack"><b>Sample flashcards</b>${(s.flashcards || []).slice(0, 4).map(c => `<div class="term"><b style="font-size:15px">${esc(c.q)}</b><span class="small">${esc(c.a)}</span></div>`).join("")}</div>
+    <p class="small muted">${(s.flashcards || []).length} flashcards · ${(s.quiz || []).length} quiz questions · ${(s.written || []).length} test questions</p>
+    <div class="row" style="justify-content:flex-end">${mine || admin ? `<button class="btn danger" id="unshare">Remove from Explore</button>` : ""}<button class="btn primary" id="saveLib">Save to my sets</button></div>`,
+    (l, close) => {
+      $("#saveLib", l).addEventListener("click", async () => {
+        const set = cleanSet({ id: uid(), createdAt: Date.now(), updatedAt: Date.now(), sourceType: s.sourceType === "topic" ? "topic" : "explore", topic: s.topic || "", subject: s.subject, subjectFixed: true,
+          title: s.title, sourceText: String(s.sourceText || ""), quizHistory: [], testHistory: [], chat: [], podcast: null, lastStudied: Date.now() },
+          { title: s.title, subject: s.subject, summary: s.summary, notes: s.notes || [], keyTerms: s.keyTerms || [] },
+          { flashcards: s.flashcards || [], quiz: s.quiz || [], blanks: s.blanks || [], written: s.written || [] });
+        await saveSet(set); close(); toast("Saved to your sets."); location.hash = "set-" + set.id;
+      });
+      const un = $("#unshare", l);
+      if (un) un.addEventListener("click", async () => { try { await S.db.collection("library").doc(s.id).delete(); toast("Removed from Explore."); close(); } catch (e) { toast("Couldn't remove it."); } });
+    });
+}
+
+/* ---------- PHOTO SOLVE ---------- */
+let solveImg = null;
+function viewSolve(v) {
+  v.innerHTML = `
+    <div class="stack" style="gap:4px"><h1>Photo Solve</h1><p class="muted">Stuck on a sum or a question? Snap it. LearnLoop explains the answer step by step so you learn the method, not just the answer.</p></div>
+    ${aiBanner()}
+    <div class="card stack" style="gap:14px">
+      ${S.imagesOk ? `<div class="drop" id="sDrop" tabindex="0" role="button" aria-label="Choose a photo">${icon("camera")}<b>Add a photo of the question</b><span class="muted small">Or type the question below</span></div><input type="file" id="sIn" accept="image/*" hidden><div class="thumbs" id="sThumb"></div>`
+        : `<p class="banner small">Photo reading isn't available here. Type the question instead.</p>`}
+      <label class="lbl" for="sQ">Question or what you need help with</label>
+      <textarea id="sQ" style="min-height:90px" placeholder="For example: Solve 2x + 5 = 17, or 'Explain question 3 in the photo'"></textarea>
+      <div class="row" style="justify-content:flex-end">${micBtn("sQ")}<button class="btn primary" id="solveBtn" ${S.sample ? "" : "disabled"}>Solve step by step</button></div>
+    </div>
+    <div id="sOut"></div>`;
+  const paint = () => { const t = $("#sThumb"); if (t) t.innerHTML = solveImg ? `<img alt="Your question" src="${URL.createObjectURL(solveImg)}"><button class="btn ghost sm" id="sRm">Remove</button>` : ""; const r = $("#sRm"); if (r) r.addEventListener("click", () => { solveImg = null; paint(); }); };
+  if (S.imagesOk) { wireDrop("#sDrop", "#sIn", f => { const img = f.find(x => x.type.startsWith("image/")); if (img) { solveImg = img; paint(); } }); paint(); }
+  wireMics(v);
+  $("#solveBtn").addEventListener("click", async () => {
+    const q = $("#sQ").value.trim(); if (!q && !solveImg) return toast("Add a photo or type a question.");
+    const out = $("#sOut"), btn = $("#solveBtn"); btn.disabled = true;
+    out.innerHTML = `<div class="card prose"><span class="muted">Working it out…</span></div>`;
+    try {
+      const opts = { onText: ({ text }) => { out.innerHTML = `<div class="card prose">${md(text)}</div>`; } };
+      if (solveImg) opts.images = [await shrinkImage(solveImg)];
+      const r = await ai(`${STUDENT}
+Help the student solve this question step by step. First write the question in one line. Then number each step and explain WHY you do it. Show working for maths. End with "**Answer:**" on its own line, then one "**Try this:**" practice question of the same type (without the answer).
+${solveImg ? "The question is in the photo." : ""}${q ? "\nStudent's note: " + q : ""}`, opts);
+      out.innerHTML = `<div class="card prose">${md(r.text)}</div>`;
+    } catch (e) { out.innerHTML = `<div class="fb bad">${esc(errMsg(e))}</div>`; }
+    btn.disabled = false;
+  });
+}
+
+/* ---------- ESSAY CHECK ---------- */
+function viewEssay(v) {
+  const d = UI.draft;
+  v.innerHTML = `
+    <div class="stack" style="gap:4px"><h1>Essay Check</h1><p class="muted">Paste your essay or long answer. Get marks on a simple rubric, what you did well, and how to make it better.</p></div>
+    ${aiBanner()}
+    <div class="card stack" style="gap:14px">
+      <div><label class="lbl" for="eTopic">Topic or question (optional)</label><input type="text" id="eTopic" value="${esc(d.eTopic || "")}" placeholder="For example: My favourite festival"></div>
+      <div><label class="lbl" for="eText">Your essay</label><textarea id="eText" style="min-height:240px" placeholder="Paste or type your essay here...">${esc(d.eText || "")}</textarea></div>
+      <div class="row between"><span class="tiny muted" id="eWc"></span><div class="row">${micBtn("eText")}<button class="btn primary" id="eBtn" ${S.sample ? "" : "disabled"}>Check my essay</button></div></div>
+    </div>
+    <div id="eOut"></div>`;
+  const t = $("#eText"), wc = () => { $("#eWc").textContent = (t.value.trim() ? t.value.trim().split(/\s+/).length : 0) + " words"; d.eText = t.value; };
+  t.addEventListener("input", wc); wc(); $("#eTopic").addEventListener("input", e => d.eTopic = e.target.value);
+  wireMics(v);
+  $("#eBtn").addEventListener("click", async () => {
+    const text = t.value.trim(); if (text.split(/\s+/).length < 40) return toast("Write at least 40 words first.");
+    const out = $("#eOut"), btn = $("#eBtn"); btn.disabled = true; btn.textContent = "Checking…";
+    out.innerHTML = `<div class="card muted">Reading your essay…</div>`;
+    try {
+      const r = await aiJSON(`You are a kind but honest Class 9 English teacher in India. Check this essay.
+Return JSON: {"score": number out of 10, "rubric": [{"name": "Content and ideas", "score": number out of 10, "comment": "one sentence"}, {"name": "Organisation", ...}, {"name": "Language and vocabulary", ...}, {"name": "Grammar and spelling", ...}, {"name": "Creativity", ...}], "strengths": ["..."], "improvements": ["specific tip"], "mistakes": [{"original": "exact words from the essay", "fixed": "corrected words", "why": "short reason"}], "betterOpening": "a stronger first sentence the student could use"}
+List at most 6 mistakes. Keep every comment short and simple.
+${$("#eTopic").value.trim() ? "Topic: " + $("#eTopic").value.trim() + "\n" : ""}Essay:
+${clip(text, 15000)}`);
+      out.innerHTML = `
+        <div class="card row between"><div><h2>Your score</h2><p class="muted small">Based on 5 parts of a school essay rubric</p></div><span class="score-ring">${esc(r.score)}/10</span></div>
+        <div class="card"><div class="tablebox"><table><thead><tr><th>Part</th><th>Score</th><th>Comment</th></tr></thead><tbody>${(r.rubric || []).map(x => `<tr><td><b>${esc(x.name)}</b></td><td class="n">${esc(x.score)}/10</td><td>${esc(x.comment)}</td></tr>`).join("")}</tbody></table></div></div>
+        <div class="grid g2"><div class="card stack"><h3>What you did well</h3><ul class="prose" style="padding-left:20px;margin:0">${(r.strengths || []).map(s => `<li>${esc(s)}</li>`).join("")}</ul></div>
+        <div class="card stack"><h3>How to make it better</h3><ul class="prose" style="padding-left:20px;margin:0">${(r.improvements || []).map(s => `<li>${esc(s)}</li>`).join("")}</ul></div></div>
+        ${(r.mistakes || []).length ? `<div class="card stack"><h3>Corrections</h3>${r.mistakes.map(m => `<div class="stack" style="gap:2px;padding:8px 0;border-top:1px solid var(--line)"><span><s class="muted">${esc(m.original)}</s> → <b>${esc(m.fixed)}</b></span><span class="small muted">${esc(m.why)}</span></div>`).join("")}</div>` : ""}
+        ${r.betterOpening ? `<div class="card"><b>Try this opening:</b> <i>${esc(r.betterOpening)}</i></div>` : ""}`;
+    } catch (e) { out.innerHTML = `<div class="fb bad">${esc(errMsg(e))}</div>`; }
+    btn.disabled = false; btn.textContent = "Check my essay";
+  });
+}
+
+/* ---------- PROGRESS ---------- */
+function viewProgress(v) {
+  const sets = S.sets.slice().sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  const hist = sets.flatMap(s => (s.quizHistory || []).map(h => ({ ...h, title: s.title }))).sort((a, b) => a.at - b.at).slice(-12);
+  const rows = sets.map(s => { const qh = s.quizHistory || [], th = s.testHistory || [], lq = qh.slice(-1)[0];
+    const best = qh.length ? Math.max(...qh.map(q => Math.round(q.score / q.total * 100))) : null;
+    const tAvg = th.length ? Math.round(th.reduce((a, t) => a + t.score / t.total, 0) / th.length * 100) : null;
+    return { s, m: mastery(s), quizzes: qh.length, last: lq ? Math.round(lq.score / lq.total * 100) : null, best, tAvg, seen: s.lastStudied }; });
+  const W = 640, H = 220, P = 34;
+  const chart = hist.length ? `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Quiz scores over time">
+      ${[0, 25, 50, 75, 100].map(y => { const yy = H - P - (H - 2 * P) * y / 100; return `<line x1="${P}" x2="${W - 10}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${P - 6}" y="${yy + 4}" font-size="11" text-anchor="end" fill="var(--muted)">${y}%</text>`; }).join("")}
+      ${(() => { const pts = hist.map((h, i) => [P + (hist.length === 1 ? (W - P - 10) / 2 : i * (W - P - 10 - 10) / (hist.length - 1) + 5), H - P - (H - 2 * P) * (h.score / h.total)]);
+        return `<path d="M${pts.map(p => p.join(",")).join(" L")} L${pts[pts.length - 1][0]},${H - P} L${pts[0][0]},${H - P} Z" fill="var(--brand-soft)" opacity=".7"/><polyline points="${pts.map(p => p.join(",")).join(" ")}" fill="none" stroke="var(--brand)" stroke-width="2.5"/>${pts.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="${i === pts.length - 1 ? 6 : 4}" fill="${i === pts.length - 1 ? "var(--accent)" : "var(--brand)"}"><title>${esc(hist[i].title)}: ${hist[i].score}/${hist[i].total}</title></circle>`).join("")}`; })()}
+      <text x="${P}" y="${H - 8}" font-size="11" fill="var(--muted)">Older</text><text x="${W - 10}" y="${H - 8}" font-size="11" text-anchor="end" fill="var(--muted)">Latest</text></svg>` : `<p class="muted small">Take a quiz to see your scores here.</p>`;
+  v.innerHTML = `
+    <div class="row between"><div class="stack" style="gap:4px"><h1>Progress</h1><p class="muted">See what you've mastered and what needs another loop.</p></div>${sets.length ? `<button class="btn" id="copyT">Copy as table</button>` : ""}</div>
+    ${!sets.length ? `<div class="card empty"><p class="muted">No study sets yet.</p><a class="btn primary" href="#new">Create a study set</a></div>` : `
+    <div class="card stack"><h2>Quiz scores over time</h2>${chart}</div>
+    <div class="card stack"><h2>Mastery by study set</h2>
+      ${rows.map(r => `<div class="stack" style="gap:4px"><div class="row between small"><a href="#set-${esc(r.s.id)}"><b>${esc(r.s.title)}</b></a><span class="n">${r.m}%</span></div>${masteryBar(r.s)}</div>`).join("")}</div>
+    <div class="card"><div class="tablebox"><table><thead><tr><th>Study set</th><th>Mastery</th><th>Quizzes</th><th>Last quiz</th><th>Best quiz</th><th>Test average</th><th>Last studied</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${esc(r.s.title)}</td><td class="n">${r.m}%</td><td class="n">${r.quizzes}</td><td class="n">${r.last == null ? "–" : r.last + "%"}</td><td class="n">${r.best == null ? "–" : r.best + "%"}</td><td class="n">${r.tAvg == null ? "–" : r.tAvg + "%"}</td><td>${fmtDate(r.seen)}</td></tr>`).join("")}</tbody></table></div></div>`}`;
+  const ct = $("#copyT");
+  if (ct) ct.addEventListener("click", () => {
+    const tsv = ["Study set\tSubject\tMastery %\tQuizzes\tLast quiz %\tBest quiz %\tTest average %\tLast studied", ...rows.map(r => [r.s.title, r.s.subject, r.m, r.quizzes, r.last ?? "", r.best ?? "", r.tAvg ?? "", fmtDate(r.seen)].join("\t"))].join("\n");
+    navigator.clipboard.writeText(tsv).then(() => toast("Copied. Paste it into a sheet or your report."), () => toast("Couldn't copy. Select the table and copy it instead."));
+  });
+}
+
+/* ---------- web platform layer (replaces Claude-hosted capabilities) ---------- */
+const API = String(window.LEARNLOOP_API || "").replace(/\/+$/, "");
+async function blobToB64(b) {
+  const buf = new Uint8Array(await b.arrayBuffer()); let s = "";
+  for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+async function callAI(input, opts = {}, wantJson = false) {
+  let lastErr;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try { return await callAIOnce(input, opts, wantJson); }
+    catch (e) {
+      lastErr = e;
+      if (!e || !["upstream", "empty", "server", "network", "rate_limited"].includes(e.code)) throw e;
+      await sleep([2500, 6000][attempt] || 0);
+    }
+  }
+  throw lastErr;
+}
+async function callAIOnce(input, opts = {}, wantJson = false) {
+  const messages = typeof input === "string" ? [{ role: "user", content: input }] : input;
+  const images = opts.images ? await Promise.all(opts.images.map(async b => ({ mime: b.type || "image/jpeg", data: await blobToB64(b) }))) : [];
+  let res;
+  try {
+    res = await fetch(API + "/ai", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages, images, json: wantJson }), signal: opts.signal });
+  } catch (e) { throw { code: "network" }; }
+  let body = {}; try { body = await res.json(); } catch (e) {}
+  if (!res.ok) throw { code: res.status === 429 ? "rate_limited" : (body.error || "server"), detail: body.detail || ("HTTP " + res.status) };
+  const text = String(body.text || "");
+  if (opts.onText) { try { opts.onText({ text, delta: text }); } catch (e) {} }
+  return { text, truncated: !!body.truncated };
+}
+const sampleShim = Object.assign((input, opts) => callAI(input, opts, false), {
+  json: async (input, opts) => parseLoose((await callAI(input, opts, true)).text),
+  limits: async () => ({ images: true })
+});
+
+function makeDictation() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  let rec = null, want = false, stopRes = null;
+  const cbs = { p: [], f: [], s: [] };
+  const emit = (k, v) => cbs[k].forEach(f => { try { f(v); } catch (e) {} });
+  function make() {
+    const r = new SR(); r.lang = "en-IN"; r.continuous = true; r.interimResults = true;
+    r.onresult = e => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) emit("f", { text: t.trim() }); else interim += t;
+      }
+      emit("p", { text: interim.trim() });
+    };
+    r.onerror = e => { if (e.error === "not-allowed" || e.error === "service-not-allowed") { want = false; r._denied = true; } };
+    r.onend = () => {
+      if (want) { try { rec = make(); rec.start(); return; } catch (e) {} }
+      want = false; rec = null;
+      emit("s", { state: "idle", reason: r._denied ? "not_granted" : "stopped" });
+      if (stopRes) { stopRes(); stopRes = null; }
+    };
+    return r;
+  }
+  return {
+    start() {
+      return new Promise((resolve, reject) => {
+        want = true; const r = make(); rec = r; let started = false;
+        r.onstart = () => { started = true; emit("s", { state: "listening" }); resolve(); };
+        const onErr = r.onerror;
+        r.onerror = e => { onErr(e); if (!started) reject({ code: r._denied ? "not_granted" : "failed" }); };
+        try { r.start(); } catch (e) { want = false; reject({ code: "failed" }); }
+      });
+    },
+    stop() { want = false; return new Promise(res => { if (!rec) return res(); stopRes = res; try { rec.stop(); } catch (e) { stopRes = null; res(); } }); },
+    onPartial(f) { cbs.p.push(f); }, onFinal(f) { cbs.f.push(f); }, onState(f) { cbs.s.push(f); }
+  };
+}
+
+function makeTts() {
+  if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return null;
+  const ss = window.speechSynthesis;
+  const cbs = { s: [], l: [] };
+  let rate = 1, queue = [], idx = 0, state = "idle", gen = 0, pending = [], voices = [];
+  const emit = (k, v) => cbs[k].forEach(f => { try { f(v); } catch (e) {} });
+  const setState = (st, reason) => { state = st; emit("s", { state: st, reason }); };
+  const loadV = () => { voices = ss.getVoices() || []; };
+  loadV(); if ("onvoiceschanged" in ss) ss.onvoiceschanged = loadV;
+  function pickVoice(kind) {
+    const en = voices.filter(v => /^en/i.test(v.lang));
+    const pool = en.length ? en : voices;
+    const order = [...pool.filter(v => /en-IN/i.test(v.lang)), ...pool.filter(v => !/en-IN/i.test(v.lang))];
+    const fem = order.find(v => /female|heera|veena|neerja|priya|zira|samantha|karen|moira|tessa|aria|jenny/i.test(v.name));
+    const male = order.find(v => /(^|\W)(male|ravi|rishi|prabhat|david|daniel|alex|guy|mark)(\W|$)/i.test(v.name) && !/female/i.test(v.name));
+    if (kind === "airy") return fem || order[0];
+    if (kind === "rounded") return male || order.find(v => v !== (fem || order[0])) || order[0];
+    return order[0];
+  }
+  function chunks(t) {
+    const parts = String(t).match(/[^.!?]+[.!?]*\s*/g) || [String(t)];
+    const out = []; let cur = "";
+    for (const p of parts) { if ((cur + p).length > 220 && cur) { out.push(cur); cur = p; } else cur += p; }
+    if (cur.trim()) out.push(cur);
+    return out;
+  }
+  function finish(reason) { setState("idle", reason); const p = pending; pending = []; p.forEach(x => x.res()); }
+  function run(my) {
+    if (my !== gen) return;
+    if (idx >= queue.length) return finish("completed");
+    const item = queue[idx];
+    if (item.first) emit("l", { line: item.line, id: item.id });
+    const u = new SpeechSynthesisUtterance(item.text);
+    const v = pickVoice(item.voice); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-IN";
+    u.rate = rate;
+    u.onend = () => { if (my !== gen) return; idx++; run(my); };
+    u.onerror = e => { if (my !== gen) return; if (e.error === "interrupted" || e.error === "canceled") return; idx++; run(my); };
+    ss.speak(u);
+  }
+  return {
+    speak(input) {
+      const lines = typeof input === "string" ? [{ text: input }] : (input || []);
+      if (lines[0] && lines[0].rate) rate = lines[0].rate;
+      gen++; ss.cancel();
+      const old = pending; pending = []; old.forEach(x => x.rej({ code: "interrupted" }));
+      queue = []; lines.forEach((l, i) => chunks(l.text).forEach((c, j) => queue.push({ text: c, voice: l.voice || "buttery", id: l.id, line: i, first: j === 0 })));
+      idx = 0; const my = gen;
+      return new Promise((res, rej) => { pending.push({ res, rej }); setState("speaking"); setTimeout(() => run(my), 60); });
+    },
+    stop() { gen++; ss.cancel(); queue = []; const p = pending; pending = []; p.forEach(x => x.rej({ code: "stopped" })); setState("idle", "viewer_stopped"); },
+    pause() { if (state === "speaking") { ss.pause(); setState("paused"); } },
+    resume() { if (state === "paused") { ss.resume(); setState("speaking"); } },
+    setRate(r) { rate = r; },
+    onState(f) { cbs.s.push(f); }, onLine(f) { cbs.l.push(f); }
+  };
+}
+
+/* ---------- start ---------- */
+async function boot() {
+  render();
+  if (API) { S.sample = sampleShim; S.imagesOk = true; }
+  S.tts = makeTts(); S.dict = makeDictation();
+  setupDictation(); setupTts();
+  S.sets = lsLoad(); S.setsReady = true;
+  try {
+    const pre = JSON.parse(localStorage.getItem("learnloop_prefill") || "null");
+    localStorage.removeItem("learnloop_prefill");
+    if (pre && pre.topic) { UI.newSrc = "topic"; UI.draft.topic = String(pre.topic).slice(0, 120); if (route() !== "new") location.hash = "new"; }
+    else if (pre && pre.src && SRC.some(x => x[0] === pre.src)) { UI.newSrc = pre.src; if (route() !== "new") location.hash = "new"; }
+  } catch (e) {}
+  render();
+  try {
+    const r = await fetch("library.json", { cache: "no-cache" });
+    const j = await r.json();
+    S.library = (j.sets || []).slice().sort((a, b) => (b.sharedAt || 0) - (a.sharedAt || 0));
+  } catch (e) { S.library = []; }
+  S.libReady = true;
+  if (route() === "explore") render();
+}
+boot();
+</script>
+</body>
+</html>

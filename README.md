@@ -24,7 +24,8 @@ It was made as a Class 9 science project.
 
 ## How it is built
 
-- `index.html` – the whole app (runs in the browser, hosted on GitHub Pages)
+- `index.html` – the landing page
+- `app.html` – the whole app (runs in the browser, hosted on GitHub Pages)
 - `config.js` – the address of the AI server
 - `library.json` – the ready-made study sets shown in Explore
 - `worker/worker.js` – a small Cloudflare Worker that keeps the AI key secret and talks to Anthropic's Claude API (Claude Sonnet 5.5, with Claude Haiku 5.5 as backup)
