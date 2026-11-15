@@ -72,7 +72,7 @@ export default {
       lastUser.content = [...imgBlocks, ...lastUser.content];
     }
 
-    const system = "You are the AI inside LearnLoop, a study app for Class 9 students in India. Be accurate, clear and kind."
+    const system = "You are the AI inside LearnLoop, a study app for CBSE, ICSE and Cambridge IGCSE students. Follow the board and class named in the request. Be accurate, clear and kind."
       + (body.json ? " Reply with ONE valid JSON object only: no markdown fences, no text before or after it." : "");
 
     // main model first; on busy/overloaded/server errors, retry once and then use the backup model
